@@ -28,8 +28,8 @@ class VentaController extends Controller
     $request->validate([
         'id_cliente' => 'nullable|exists:clientes,id', // Permite NULL pero valida si está presente
     ]);
-    
-    
+
+
 
     $id_cliente = (int) $request->id_cliente; // Convertir a entero
     $total = (float) Cart::subtotal();
@@ -163,6 +163,14 @@ class VentaController extends Controller
 public function create()
 {
     return view('venta.create'); // Asegúrate de que esta vista exista
+}
+
+public function misPedidos()
+{
+    $usuarioId = auth()->id();
+    $ventas = Venta::where('id_usuario', $usuarioId)->with('detalleventa.producto')->get();
+
+    return view('venta.pedidos', compact('ventas'));
 }
 
 
