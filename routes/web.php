@@ -86,6 +86,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // Ventas
     Route::middleware(['auth'])->group(function () {
+        Route::get('/mis-pedidos/{id}/detalles', [VentaController::class, 'detallesCliente'])->name('pedidos.cliente.detalles');
+        Route::get('/mis-pedidos', [VentaController::class, 'misPedidos'])->name('mis.pedidos');
 
         Route::get('/venta/show', [VentaController::class, 'show'])->name('venta.show');
         Route::get('/venta', [VentaController::class, 'index'])->name('venta.index');

@@ -24,48 +24,48 @@ class VentaController extends Controller
     }
 
     public function store(Request $request)
-{
-    $request->validate([
-        'id_cliente' => 'nullable|exists:clientes,id', 
-    ]);
-
-    $id_cliente = (int) $request->id_cliente; 
-    $total = (float) Cart::subtotal();
-    $id_usuario = Auth::check() ? Auth::id() : null; // Si hay usuario autenticado, se guarda su ID
-
-    if ($total > 0) {
-        $sale = Venta::create([
-            'total' => $total,
-            'id_cliente' => $id_cliente, 
-            'id_usuario' => $id_usuario, // Se almacena el usuario si existe
-            'estado' => 'pendiente',
+    {
+        $request->validate([
+            'id_cliente' => 'nullable|exists:clientes,id', 
         ]);
-
-        foreach (Cart::content() as $item) {
-            Detalleventa::create([
-                'precio' => $item->price,
-                'cantidad' => $item->qty,
-                'id_producto' => $item->id,
-                'id_venta' => $sale->id,
+    
+        $id_cliente = $request->id_cliente ? (int) $request->id_cliente : null; // ID del cliente desde el formulario
+        $total = (float) Cart::subtotal();
+        $id_usuario = Auth::id(); // ID del usuario autenticado
+    
+        if ($total > 0) {
+            $sale = Venta::create([
+                'total' => $total,
+                'id_cliente' => $id_cliente, // ID del cliente
+                'id_usuario' => $id_usuario, // ID del usuario autenticado
+                'estado' => 'pendiente',
+            ]);
+    
+            foreach (Cart::content() as $item) {
+                Detalleventa::create([
+                    'precio' => $item->price,
+                    'cantidad' => $item->qty,
+                    'id_producto' => $item->id,
+                    'id_venta' => $sale->id,
+                ]);
+            }
+    
+            Cart::destroy();
+    
+            return response()->json([
+                'title' => 'VENTA GENERADA',
+                'message' => 'La venta ha sido registrada exitosamente.',
+                'icon' => 'success',
+                'ticket' => $sale->id,
             ]);
         }
-
-        Cart::destroy();
-
+    
         return response()->json([
-            'title' => 'VENTA GENERADA',
-            'message' => 'La venta ha sido registrada exitosamente.',
-            'icon' => 'success',
-            'ticket' => $sale->id,
+            'title' => 'CARRITO VACÍO',
+            'message' => 'No hay productos en el carrito.',
+            'icon' => 'warning',
         ]);
     }
-
-    return response()->json([
-        'title' => 'CARRITO VACÍO',
-        'message' => 'No hay productos en el carrito.',
-        'icon' => 'warning',
-    ]);
-}
 
 
     public function ticket($id)
@@ -166,12 +166,21 @@ public function misPedidos()
 {
     $usuarioId = auth()->id(); 
 
-    $pedidos = Venta::where('id_usuario', $usuarioId)
-                    ->with(['detalleventa.producto', 'usuario']) // Incluir usuario
-                    ->get();
+    // 📌 Ventas realizadas directamente por el CLIENTE (id_usuario = id_cliente)
+    $ventasCliente = Venta::where('id_cliente', $usuarioId)
+                          ->whereColumn('id_cliente', 'id_usuario') // Asegurar que el cliente hizo la compra
+                          ->with(['detalleventa.producto'])
+                          ->get();
 
-    return view('carrito.pedidos', compact('pedidos'));
+    // 📌 Ventas realizadas por un ADMINISTRADOR (id_usuario != id_cliente)
+    $ventasAdmin = Venta::where('id_cliente', $usuarioId)
+                        ->whereColumn('id_cliente', '<>', 'id_usuario') // La compra la hizo un admin
+                        ->with(['detalleventa.producto', 'usuario']) // Cargar info del admin
+                        ->get();
+
+    return view('carrito.pedidos', compact('ventasCliente', 'ventasAdmin'));
 }
+
 
 public function cambiarEstado(Request $request, $id)
 {
@@ -185,6 +194,15 @@ public function cambiarEstado(Request $request, $id)
 
     return response()->json(['success' => true, 'message' => 'Estado actualizado correctamente.']);
 }
+public function detallesCliente($id)
+{
+    $pedido = Venta::with(['detalleventa.producto']) // Solo carga productos, no info del admin
+                    ->where('id_cliente', auth()->id()) // Solo mostrar ventas del usuario autenticado
+                    ->findOrFail($id);
+
+    return view('pedidos.detalles_cliente', compact('pedido'));
+}
+
 
 }
 

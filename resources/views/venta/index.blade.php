@@ -24,7 +24,7 @@
                         <div class="form-group col-md-4">
                             <label for="buscarCliente">Buscar Cliente</label>
                             <input id="buscarCliente" class="form-control" type="text" placeholder="Buscar Cliente">
-                            <input id="id_cliente" class="form-control" type="hidden">
+                            <input id="id_cliente" class="form-control" type="hidden" name="id_cliente">
                         </div>
                         <div class="form-group col-md-4">
                             <label for="tel_cliente">Teléfono</label>
