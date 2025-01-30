@@ -24,50 +24,46 @@ class VentaController extends Controller
     }
 
     public function store(Request $request)
-{
-    $request->validate([
-        'id_cliente' => 'nullable|exists:clientes,id', // Permite NULL pero valida si está presente
-    ]);
-
-
-
-    $id_cliente = (int) $request->id_cliente; // Convertir a entero
-    $total = (float) Cart::subtotal();
-
-    if ($total > 0) {
-        $userId = Auth::id();
-        $sale = Venta::create([
-            'total' => $total,
-            'id_cliente' => $id_cliente, // Ahora es un entero
-            'id_usuario' => $userId,
-            'estado' => 'pendiente',
+    {
+        $request->validate([
+            'id_cliente' => 'nullable|exists:clientes,id', // Permite NULL pero valida si está presente
         ]);
-
-        foreach (Cart::content() as $item) {
-            Detalleventa::create([
-                'precio' => $item->price,
-                'cantidad' => $item->qty,
-                'id_producto' => $item->id,
-                'id_venta' => $sale->id,
+    
+        $id_cliente = (int) $request->id_cliente; // Convertir a entero
+        $total = (float) Cart::subtotal();
+    
+        if ($total > 0) {
+            $sale = Venta::create([
+                'total' => $total,
+                'id_cliente' => $id_cliente, // Ahora es un entero
+                'estado' => 'pendiente',
+            ]);
+    
+            foreach (Cart::content() as $item) {
+                Detalleventa::create([
+                    'precio' => $item->price,
+                    'cantidad' => $item->qty,
+                    'id_producto' => $item->id,
+                    'id_venta' => $sale->id,
+                ]);
+            }
+    
+            Cart::destroy();
+    
+            return response()->json([
+                'title' => 'VENTA GENERADA',
+                'message' => 'La venta ha sido registrada exitosamente.',
+                'icon' => 'success',
+                'ticket' => $sale->id,
             ]);
         }
-
-        Cart::destroy();
-
+    
         return response()->json([
-            'title' => 'VENTA GENERADA',
-            'message' => 'La venta ha sido registrada exitosamente.',
-            'icon' => 'success',
-            'ticket' => $sale->id,
+            'title' => 'CARRITO VACÍO',
+            'message' => 'No hay productos en el carrito.',
+            'icon' => 'warning',
         ]);
     }
-
-    return response()->json([
-        'title' => 'CARRITO VACÍO',
-        'message' => 'No hay productos en el carrito.',
-        'icon' => 'warning',
-    ]);
-}
 
 
     public function ticket($id)
