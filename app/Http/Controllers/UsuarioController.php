@@ -35,7 +35,7 @@ class UsuarioController extends Controller
             'plantel_educativo' => 'nullable|string|max:255',
             'region' => 'nullable|string|max:255',
         ]);
-    
+
         // Crear usuario
         $user = User::create([
             'name' => $request->name,
@@ -43,7 +43,7 @@ class UsuarioController extends Controller
             'password' => Hash::make($request->password),
             'role' => $request->role,
         ]);
-    
+
         // Si el usuario es un cliente, crear también un registro en "clientes"
         if ($request->role === 'cliente') {
             Cliente::create([
@@ -56,10 +56,10 @@ class UsuarioController extends Controller
                 'region' => $request->region,
             ]);
         }
-    
+
         return redirect()->route('usuarios.index')->with('success', 'Usuario creado correctamente.');
     }
-    
+
     public function show($id): View
     {
         $usuario = User::findOrFail($id);
@@ -74,57 +74,55 @@ class UsuarioController extends Controller
 
     public function update(Request $request, User $usuario): RedirectResponse
 {
-    $request->validate([
+    // Definir reglas básicas de validación
+    $rules = [
         'name' => 'required|string|max:255',
         'email' => 'required|email|unique:users,email,' . $usuario->id,
         'password' => 'nullable|string|min:6',
         'role' => 'required|string|in:admin,cliente',
-        'telefono' => 'nullable|string|max:15',
-        'direccion' => 'nullable|string|max:255',
-        'plantel_educativo' => 'nullable|string|max:255',
-        'region' => 'nullable|string|max:255',
-    ]);
-
-    $data = [
-        'name' => $request->name,
-        'email' => $request->email,
-        'role' => $request->role,
     ];
 
-    if ($request->filled('password')) {
-        $data['password'] = Hash::make($request->password);
+    // Si el usuario es cliente, los campos adicionales son obligatorios
+    if ($request->role === 'cliente') {
+        $rules += [
+            'telefono' => 'required|string|max:15',
+            'direccion' => 'required|string|max:255',
+            'plantel_educativo' => 'required|string|max:255',
+            'region' => 'required|string|max:255',
+        ];
     }
 
-    $usuario->update($data);
+    $validatedData = $request->validate($rules);
 
-    // Si el usuario es "cliente", actualizar o crear el registro en "clientes"
+    // Actualizar usuario
+    $usuario->update([
+        'name' => $validatedData['name'],
+        'email' => $validatedData['email'],
+        'role' => $validatedData['role'],
+    ]);
+
+    if ($request->filled('password')) {
+        $usuario->update(['password' => Hash::make($request->password)]);
+    }
+
+    // Si el usuario es cliente, actualizar o crear el cliente asociado
     if ($request->role === 'cliente') {
         Cliente::updateOrCreate(
-            ['user_id' => $usuario->id], // Si existe un cliente con este user_id, actualizarlo
+            ['user_id' => $usuario->id],
             [
-                'nombre' => $request->name,
-                'email' => $request->email,
-                'telefono' => $request->telefono,
-                'direccion' => $request->direccion,
-                'plante_educativo' => $request->plantel_educativo,
-                'region' => $request->region,
+                'nombre' => $validatedData['name'],
+                'email' => $validatedData['email'],
+                'telefono' => $validatedData['telefono'],
+                'direccion' => $validatedData['direccion'],
+                'plante_educativo' => $validatedData['plantel_educativo'],
+                'region' => $validatedData['region'],
             ]
         );
     } else {
-        // Si el rol cambia a "admin", eliminarlo de "clientes"
+        // Si el usuario deja de ser cliente, eliminar sus datos en la tabla clientes
         Cliente::where('user_id', $usuario->id)->delete();
     }
 
     return redirect()->route('usuarios.index')->with('success', 'Usuario actualizado correctamente.');
 }
-
-    
-
-    public function destroy($id): RedirectResponse
-    {
-        $usuario = User::findOrFail($id);
-        $usuario->delete();
-
-        return redirect()->route('usuarios.index')->with('success', 'Usuario eliminado correctamente.');
-    }
 }

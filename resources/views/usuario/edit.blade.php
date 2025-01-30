@@ -59,9 +59,10 @@
                             @enderror
                         </div>
 
+                        <!-- Rol -->
                         <div class="mb-3">
                             <label for="role" class="form-label">Role</label>
-                            <select name="role" id="role" class="form-control @error('role') is-invalid @enderror"  required>
+                            <select name="role" id="role" class="form-control @error('role') is-invalid @enderror" required>
                                 <option value="admin" {{ old('role', $usuario->role) == 'admin' ? 'selected' : '' }}>Administrador</option>
                                 <option value="cliente" {{ old('role', $usuario->role) == 'cliente' ? 'selected' : '' }}>Cliente</option>
                             </select>
@@ -70,29 +71,44 @@
                             @enderror
                         </div>
 
-<!-- Campos adicionales para Cliente -->
-<div id="campos-cliente" style="display: none;">
-    <div class="mb-3">
-        <label for="telefono" class="form-label">Teléfono</label>
-        <input type="text" name="telefono" id="telefono" class="form-control" placeholder="Ingrese el número de teléfono" value="{{ old('telefono') }}">
-    </div>
+                        <!-- Campos adicionales para Cliente -->
+                        <div id="campos-cliente" style="display: none;">
+                            <div class="mb-3">
+                                <label for="telefono" class="form-label">Teléfono</label>
+                                <input type="text" name="telefono" id="telefono" class="form-control @error('telefono') is-invalid @enderror"
+                                       placeholder="Ingrese el número de teléfono" value="{{ old('telefono', $usuario->cliente->telefono ?? '') }}" required>
+                                @error('telefono')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
 
-    <div class="mb-3">
-        <label for="direccion" class="form-label">Dirección</label>
-        <input type="text" name="direccion" id="direccion" class="form-control" placeholder="Ingrese la dirección" value="{{ old('direccion') }}">
-    </div>
+                            <div class="mb-3">
+                                <label for="direccion" class="form-label">Dirección</label>
+                                <input type="text" name="direccion" id="direccion" class="form-control @error('direccion') is-invalid @enderror"
+                                       placeholder="Ingrese la dirección" value="{{ old('direccion', $usuario->cliente->direccion ?? '') }}" required>
+                                @error('direccion')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
 
-    <div class="mb-3">
-        <label for="plantel_educativo" class="form-label">Plantel Educativo</label>
-        <input type="text" name="plantel_educativo" id="plantel_educativo" class="form-control" placeholder="Ingrese el plantel educativo" value="{{ old('plantel_educativo') }}">
-    </div>
+                            <div class="mb-3">
+                                <label for="plantel_educativo" class="form-label">Plantel Educativo</label>
+                                <input type="text" name="plantel_educativo" id="plantel_educativo" class="form-control @error('plantel_educativo') is-invalid @enderror"
+                                       placeholder="Ingrese el plantel educativo" value="{{ old('plantel_educativo', $usuario->cliente->plantel_educativo ?? '') }}" required>
+                                @error('plantel_educativo')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
 
-    <div class="mb-3">
-        <label for="region" class="form-label">Región</label>
-        <input type="text" name="region" id="region" class="form-control" placeholder="Ingrese la región" value="{{ old('region') }}">
-    </div>
-</div>
-
+                            <div class="mb-3">
+                                <label for="region" class="form-label">Región</label>
+                                <input type="text" name="region" id="region" class="form-control @error('region') is-invalid @enderror"
+                                       placeholder="Ingrese la región" value="{{ old('region', $usuario->cliente->region ?? '') }}" required>
+                                @error('region')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
 
                         <!-- Botones de acción -->
                         <div class="mt-3 d-flex justify-content-between">
@@ -105,6 +121,7 @@
         </div>
     </div>
 @stop
+
 @section('css')
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
     <style>
@@ -127,24 +144,60 @@
         }
     </style>
 @stop
+
 @section('js')
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            let roleSelect = document.getElementById("role");
-            let camposCliente = document.getElementById("campos-cliente");
+       document.addEventListener("DOMContentLoaded", function () {
+    let roleSelect = document.getElementById("role");
+    let form = document.querySelector("form");
 
-            function toggleCamposCliente() {
-                if (roleSelect.value === "cliente") {
-                    camposCliente.style.display = "block";
+    function toggleCamposCliente() {
+        let camposCliente = document.getElementById("campos-cliente");
+
+        if (roleSelect.value === "cliente") {
+            camposCliente.style.display = "block";
+            document.getElementById("telefono").setAttribute("required", "required");
+            document.getElementById("direccion").setAttribute("required", "required");
+            document.getElementById("plantel_educativo").setAttribute("required", "required");
+            document.getElementById("region").setAttribute("required", "required");
+        } else {
+            camposCliente.style.display = "none";
+            document.getElementById("telefono").removeAttribute("required");
+            document.getElementById("direccion").removeAttribute("required");
+            document.getElementById("plantel_educativo").removeAttribute("required");
+            document.getElementById("region").removeAttribute("required");
+        }
+    }
+
+    roleSelect.addEventListener("change", toggleCamposCliente);
+    toggleCamposCliente();
+
+    form.addEventListener("submit", function (e) {
+        if (roleSelect.value === "cliente") {
+            let campos = ["telefono", "direccion", "plantel_educativo", "region"];
+            let valid = true;
+
+            campos.forEach(id => {
+                let campo = document.getElementById(id);
+                if (campo.value.trim() === '') {
+                    campo.classList.add("is-invalid");
+                    valid = false;
                 } else {
-                    camposCliente.style.display = "none";
+                    campo.classList.remove("is-invalid");
                 }
+            });
+
+            if (!valid) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "Por favor, complete todos los campos obligatorios.",
+                });
             }
+        }
+    });
+});
 
-            roleSelect.addEventListener("change", toggleCamposCliente);
-
-            // Ejecutar al cargar la página (para cuando el usuario ya tiene un rol seleccionado)
-            toggleCamposCliente();
-        });
     </script>
 @stop

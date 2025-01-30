@@ -1,9 +1,9 @@
-@extends('adminlte::page') <!-- Extiende la plantilla AdminLTE -->
+@extends('adminlte::page')
 
-@section('title', 'Nuevo Usuario') <!-- Define el título de la página -->
+@section('title', 'Nuevo Usuario')
 
 @section('content_header')
-    <h1 class="text-center" style="color: var(--color-primary); font-weight: bold;">Crear Nuevo Usuario</h1> <!-- Encabezado principal -->
+    <h1 class="text-center" style="color: var(--color-primary); font-weight: bold;">Crear Nuevo Usuario</h1>
 @stop
 
 @section('content')
@@ -34,7 +34,7 @@
                             <label for="nombre" class="form-label">Nombre</label>
                             <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror"
                                 placeholder="Nombre completo" value="{{ old('name') }}" required>
-                            @error('nombre')
+                            @error('name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
@@ -53,7 +53,7 @@
                         <div class="mb-3">
                             <label for="telefono" class="form-label">Teléfono</label>
                             <input type="text" name="telefono" id="telefono" class="form-control @error('telefono') is-invalid @enderror"
-                                   placeholder="Teléfono" value="{{ old('telefono') }}">
+                                   placeholder="Teléfono" value="{{ old('telefono') }}" required>
                             @error('telefono')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -72,9 +72,9 @@
                         <!-- Rol -->
                         <div class="mb-3">
                             <label for="role" class="form-label">Role</label>
-                            <select name="role" id="role" class="form-control @error('role') is-invalid @enderror"  required>
-                                <option value="admin" {{ old('role', $usuario->role) == 'admin' ? 'selected' : '' }}>Administrador</option>
-                                <option value="cliente" {{ old('role', $usuario->role) == 'cliente' ? 'selected' : '' }}>Cliente</option>
+                            <select name="role" id="role" class="form-control @error('role') is-invalid @enderror" required>
+                                <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Administrador</option>
+                                <option value="cliente" {{ old('role') == 'cliente' ? 'selected' : '' }}>Cliente</option>
                             </select>
                             @error('role')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -82,27 +82,25 @@
                         </div>
 
                         <!-- Campos adicionales para Cliente -->
-<div id="campos-cliente" style="display: none;">
-    <div class="mb-3">
-        <label for="telefono" class="form-label">Teléfono</label>
-        <input type="text" name="telefono" id="telefono" class="form-control" placeholder="Ingrese el número de teléfono" value="{{ old('telefono') }}">
-    </div>
+                        <div id="campos-cliente" style="display: none;">
+                            <div class="mb-3">
+                                <label for="direccion" class="form-label">Dirección</label>
+                                <input type="text" name="direccion" id="direccion" class="form-control"
+                                       placeholder="Ingrese la dirección" value="{{ old('direccion') }}" required>
+                            </div>
 
-    <div class="mb-3">
-        <label for="direccion" class="form-label">Dirección</label>
-        <input type="text" name="direccion" id="direccion" class="form-control" placeholder="Ingrese la dirección" value="{{ old('direccion') }}">
-    </div>
+                            <div class="mb-3">
+                                <label for="plantel_educativo" class="form-label">Plantel Educativo</label>
+                                <input type="text" name="plantel_educativo" id="plantel_educativo" class="form-control"
+                                       placeholder="Ingrese el plantel educativo" value="{{ old('plantel_educativo') }}" required>
+                            </div>
 
-    <div class="mb-3">
-        <label for="plantel_educativo" class="form-label">Plantel Educativo</label>
-        <input type="text" name="plantel_educativo" id="plantel_educativo" class="form-control" placeholder="Ingrese el plantel educativo" value="{{ old('plantel_educativo') }}">
-    </div>
-
-    <div class="mb-3">
-        <label for="region" class="form-label">Región</label>
-        <input type="text" name="region" id="region" class="form-control" placeholder="Ingrese la región" value="{{ old('region') }}">
-    </div>
-</div>
+                            <div class="mb-3">
+                                <label for="region" class="form-label">Región</label>
+                                <input type="text" name="region" id="region" class="form-control"
+                                       placeholder="Ingrese la región" value="{{ old('region') }}" required>
+                            </div>
+                        </div>
 
                         <!-- Botones de acción -->
                         <div class="mt-3 d-flex justify-content-between">
@@ -138,6 +136,7 @@
         }
     </style>
 @stop
+
 @section('js')
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -159,4 +158,3 @@
         });
     </script>
 @stop
-

@@ -26,7 +26,7 @@
                     <h5 class="mb-0">Formulario de Creación de Cliente</h5>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{{ route('clientes.store') }}" enctype="multipart/form-data">
+                    <form method="POST" action="{{ route('clientes.store') }}" enctype="multipart/form-data" id="formCliente">
                         @csrf
 
                         <!-- Nombre -->
@@ -79,12 +79,12 @@
                             @enderror
                         </div>
 
-                        <!-- plante Educativo -->
+                        <!-- Plantel Educativo -->
                         <div class="mb-3">
                             <label for="plante_educativo" class="form-label">Plantel Educativo</label>
                             <input type="text" name="plante_educativo" id="plante_educativo"
                                    class="form-control @error('plante_educativo') is-invalid @enderror"
-                                   placeholder="Ingrese el plantel educativo" value="{{ old('plante_educativo') }}">
+                                   placeholder="Ingrese el plantel educativo" value="{{ old('plante_educativo') }}" required>
                             @error('plante_educativo')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -94,7 +94,7 @@
                         <div class="mb-3">
                             <label for="region" class="form-label">Región</label>
                             <input type="text" name="region" id="region" class="form-control @error('region') is-invalid @enderror"
-                                   placeholder="Ingrese la región" value="{{ old('region') }}">
+                                   placeholder="Ingrese la región" value="{{ old('region') }}" required>
                             @error('region')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -134,12 +134,40 @@
         .btn-danger:hover {
             opacity: 0.8;
         }
+
+        .is-invalid {
+            border-color: red !important;
+        }
     </style>
 @stop
 
 @section('js')
-    <!-- Scripts adicionales si es necesario -->
+    <!-- Scripts adicionales para validación -->
     <script>
-        console.log('Formulario de creación cargado correctamente.');
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelector('#formCliente').addEventListener('submit', function (e) {
+                let campos = ['nombre', 'email', 'telefono', 'direccion', 'password', 'plante_educativo', 'region'];
+                let valid = true;
+
+                campos.forEach(id => {
+                    let campo = document.getElementById(id);
+                    if (campo.value.trim() === '') {
+                        campo.classList.add('is-invalid');
+                        valid = false;
+                    } else {
+                        campo.classList.remove('is-invalid');
+                    }
+                });
+
+                if (!valid) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Por favor, complete todos los campos obligatorios.',
+                    });
+                }
+            });
+        });
     </script>
 @stop
