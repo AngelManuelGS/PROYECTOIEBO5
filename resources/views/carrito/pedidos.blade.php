@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('adminlte::page')
 
 @section('content')
 <div class="container">
@@ -34,7 +34,7 @@
     <tr>
         <td>{{ $pedido->id }}</td>
         <td>{{ $pedido->cliente->nombre ?? 'Sin Cliente' }}</td>
-        <td>{{ $pedido->usuario->name ?? 'Cliente Directo' }}</td> 
+        <td>{{ $pedido->usuario->name ?? 'Cliente Directo' }}</td>
         <td>{{ $pedido->total }}</td>
         <td>{{ $pedido->estado }}</td>
     </tr>

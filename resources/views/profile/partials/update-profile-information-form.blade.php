@@ -1,77 +1,156 @@
-<section>
-    <header>
-        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-            {{ __('Profile Information') }}
-        </h2>
-        <!-- Título de la sección con soporte para temas claro y oscuro -->
+@extends('adminlte::page')
 
-        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            {{ __("Update your account's profile information and email address.") }}
-        </p>
-        <!-- Mensaje descriptivo que indica que se puede actualizar la información del perfil y el correo electrónico -->
-    </header>
+@section('title', 'Perfil de Usuario')
 
-    <form id="send-verification" method="post" action="{{ route('verification.send') }}">
-        @csrf
-    </form>
-    <!-- Formulario independiente para enviar una solicitud de verificación de correo electrónico -->
+@section('content_header')
+    <h1 class="text-center" style="color: var(--color-primary); font-weight: bold;">Perfil de Usuario</h1>
+@stop
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
-        @csrf
-        @method('patch')
-        <!-- Formulario principal para actualizar el perfil. Usa el método PATCH para indicar actualización de datos -->
+@section('content')
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Tarjeta para actualizar la información del perfil -->
+            <div class="card shadow-sm border-2" style="border-color: var(--color-primary); border-radius: 8px;">
+                <div class="card-header bg-primary text-white" style="border-radius: 8px 8px 0 0;">
+                    <h5 class="mb-0">Actualizar Información de Perfil</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ route('profile.update') }}">
+                        @csrf
+                        @method('patch')
 
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
-            <x-input-error class="mt-2" :messages="$errors->get('name')" />
-            <!-- Campo de texto para el nombre del usuario, con mensajes de error en caso de validación fallida -->
-        </div>
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Nombre</label>
+                            <input type="text" name="name" id="name" class="form-control"
+                                   value="{{ old('name', $user->name) }}" required>
+                        </div>
 
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
-            <x-input-error class="mt-2" :messages="$errors->get('email')" />
-            <!-- Campo de texto para el correo electrónico del usuario, con mensajes de error si hay problemas de validación -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Correo Electrónico</label>
+                            <input type="email" name="email" id="email" class="form-control"
+                                   value="{{ old('email', $user->email) }}" required>
+                        </div>
 
-            @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
-                <!-- Muestra un mensaje de verificación de correo si el usuario debe verificar su correo y aún no lo ha hecho -->
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-secondary">Guardar Cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
-                <div>
-                    <p class="text-sm mt-2 text-gray-800 dark:text-gray-200">
-                        {{ __('Your email address is unverified.') }}
+            <!-- Tarjeta para actualizar la contraseña -->
+            <div class="card shadow-sm border-2 mt-4" style="border-color: #f8b400; border-radius: 8px;">
+                <div class="card-header text-white" style="background-color: #f8b400; border-radius: 8px 8px 0 0;">
+                    <h5 class="mb-0">Actualizar Contraseña</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{{ route('password.update') }}">
+                        @csrf
+                        @method('put')
 
-                        <button form="send-verification" class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
-                            {{ __('Click here to re-send the verification email.') }}
-                        </button>
-                        <!-- Botón para re-enviar el correo de verificación. Envía el formulario con id 'send-verification' -->
+                        <div class="mb-3">
+                            <label for="current_password" class="form-label">Contraseña Actual</label>
+                            <input type="password" name="current_password" id="current_password" class="form-control"
+                                   required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Nueva Contraseña</label>
+                            <input type="password" name="password" id="password" class="form-control"
+                                   required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password_confirmation" class="form-label">Confirmar Contraseña</label>
+                            <input type="password" name="password_confirmation" id="password_confirmation"
+                                   class="form-control" required>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-warning">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tarjeta para eliminar la cuenta -->
+            <div class="card shadow-sm border-2 mt-4" style="border-color: #dc3545; border-radius: 8px;">
+                <div class="card-header text-white" style="background-color: #dc3545; border-radius: 8px 8px 0 0;">
+                    <h5 class="mb-0">Eliminar Cuenta</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">
+                        Una vez que elimine su cuenta, todos sus datos y recursos serán eliminados permanentemente. Antes de proceder, descargue cualquier información que desee conservar.
                     </p>
 
-                    @if (session('status') === 'verification-link-sent')
-                        <p class="mt-2 font-medium text-sm text-green-600 dark:text-green-400">
-                            {{ __('A new verification link has been sent to your email address.') }}
-                        </p>
-                        <!-- Mensaje de confirmación cuando se envía el enlace de verificación -->
-                    @endif
+                    <form method="post" action="{{ route('profile.destroy') }}">
+                        @csrf
+                        @method('delete')
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Contraseña</label>
+                            <input type="password" name="password" id="password" class="form-control"
+                                   required placeholder="Ingrese su contraseña para confirmar">
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-danger">Eliminar Cuenta</button>
+                        </div>
+                    </form>
                 </div>
-            @endif
-        </div>
+            </div>
 
-        <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
-            <!-- Botón para guardar los cambios en el perfil -->
-
-            @if (session('status') === 'profile-updated')
-                <p
-                    x-data="{ show: true }"
-                    x-show="show"
-                    x-transition
-                    x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600 dark:text-gray-400"
-                >{{ __('Saved.') }}</p>
-                <!-- Mensaje de confirmación que aparece temporalmente después de guardar los cambios en el perfil -->
-            @endif
         </div>
-    </form>
-</section>
-z
+    </div>
+@stop
+
+@section('css')
+    <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
+    <style>
+        :root {
+            --color-primary: #285C4D;
+            --color-secondary: #B38E5D;
+            --color-white: #ffffff;
+        }
+
+        .bg-primary {
+            background-color: var(--color-primary) !important;
+        }
+
+        .btn-warning {
+            background-color: #f8b400;
+            color: var(--color-white);
+            border: none;
+        }
+
+        .btn-secondary {
+            background-color: #8d8d8d;
+            color: var(--color-white);
+            border: none;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: var(--color-white);
+            border: none;
+        }
+
+        .btn-warning:hover,
+        .btn-secondary:hover,
+        .btn-danger:hover {
+            opacity: 0.8;
+        }
+
+        h1 {
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            color: var(--color-primary);
+        }
+    </style>
+@stop
+
+@section('js')
+    <script>
+        console.log('Vista de perfil de usuario cargada correctamente.');
+    </script>
+@stop

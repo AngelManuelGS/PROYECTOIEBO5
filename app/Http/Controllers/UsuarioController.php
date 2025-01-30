@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Cliente;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Contracts\View\View;
-use App\Models\Cliente;
 
 class UsuarioController extends Controller
 {
@@ -25,35 +25,44 @@ class UsuarioController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
+        // Reglas básicas de validación
+        $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
-            'role' => 'required|string|in:admin,cliente', // Validamos que sea "admin" o "cliente"
-            'telefono' => 'nullable|string|max:15', // Solo si es cliente
-            'direccion' => 'nullable|string|max:255',
-            'plantel_educativo' => 'nullable|string|max:255',
-            'region' => 'nullable|string|max:255',
-        ]);
+            'role' => 'required|string|in:admin,cliente',
+        ];
+
+        // Validar campos adicionales solo si el rol es cliente
+        if ($request->role === 'cliente') {
+            $rules += [
+                'telefono' => 'required|string|max:15',
+                'direccion' => 'required|string|max:255',
+                'plantel_educativo' => 'required|string|max:255',
+                'region' => 'required|string|max:255',
+            ];
+        }
+
+        $validatedData = $request->validate($rules);
 
         // Crear usuario
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => $request->role,
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
+            'password' => Hash::make($validatedData['password']),
+            'role' => $validatedData['role'],
         ]);
 
-        // Si el usuario es un cliente, crear también un registro en "clientes"
-        if ($request->role === 'cliente') {
+        // Si el usuario es cliente, crear su registro en clientes
+        if ($validatedData['role'] === 'cliente') {
             Cliente::create([
                 'user_id' => $user->id,
-                'nombre' => $request->name,
-                'email' => $request->email,
-                'telefono' => $request->telefono,
-                'direccion' => $request->direccion,
-                'plante_educativo' => $request->plantel_educativo,
-                'region' => $request->region,
+                'nombre' => $validatedData['name'],
+                'email' => $validatedData['email'],
+                'telefono' => $validatedData['telefono'],
+                'direccion' => $validatedData['direccion'],
+                'plante_educativo' => $validatedData['plantel_educativo'],
+                'region' => $validatedData['region'],
             ]);
         }
 
@@ -73,56 +82,64 @@ class UsuarioController extends Controller
     }
 
     public function update(Request $request, User $usuario): RedirectResponse
-{
-    // Definir reglas básicas de validación
-    $rules = [
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email,' . $usuario->id,
-        'password' => 'nullable|string|min:6',
-        'role' => 'required|string|in:admin,cliente',
-    ];
-
-    // Si el usuario es cliente, los campos adicionales son obligatorios
-    if ($request->role === 'cliente') {
-        $rules += [
-            'telefono' => 'required|string|max:15',
-            'direccion' => 'required|string|max:255',
-            'plantel_educativo' => 'required|string|max:255',
-            'region' => 'required|string|max:255',
+    {
+        // Definir reglas básicas de validación
+        $rules = [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $usuario->id,
+            'password' => 'nullable|string|min:6',
+            'role' => 'required|string|in:admin,cliente',
         ];
+
+        // Validar campos adicionales solo si el rol es cliente
+        if ($request->role === 'cliente') {
+            $rules += [
+                'telefono' => 'required|string|max:15',
+                'direccion' => 'required|string|max:255',
+                'plantel_educativo' => 'required|string|max:255',
+                'region' => 'required|string|max:255',
+            ];
+        }
+
+        $validatedData = $request->validate($rules);
+
+        // Actualizar usuario
+        $usuario->update([
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
+            'role' => $validatedData['role'],
+        ]);
+
+        if ($request->filled('password')) {
+            $usuario->update(['password' => Hash::make($request->password)]);
+        }
+
+        // Si el usuario es cliente, actualizar o crear el cliente asociado
+        if ($validatedData['role'] === 'cliente') {
+            Cliente::updateOrCreate(
+                ['user_id' => $usuario->id],
+                [
+                    'nombre' => $validatedData['name'],
+                    'email' => $validatedData['email'],
+                    'telefono' => $validatedData['telefono'],
+                    'direccion' => $validatedData['direccion'],
+                    'plante_educativo' => $validatedData['plantel_educativo'],
+                    'region' => $validatedData['region'],
+                ]
+            );
+        } else {
+            // Si el usuario deja de ser cliente, eliminar sus datos en la tabla clientes
+            Cliente::where('user_id', $usuario->id)->delete();
+        }
+
+        return redirect()->route('usuarios.index')->with('success', 'Usuario actualizado correctamente.');
     }
 
-    $validatedData = $request->validate($rules);
+    public function destroy($id): RedirectResponse
+    {
+        $usuario = User::findOrFail($id);
+        $usuario->delete();
 
-    // Actualizar usuario
-    $usuario->update([
-        'name' => $validatedData['name'],
-        'email' => $validatedData['email'],
-        'role' => $validatedData['role'],
-    ]);
-
-    if ($request->filled('password')) {
-        $usuario->update(['password' => Hash::make($request->password)]);
+        return redirect()->route('usuarios.index')->with('success', 'Usuario eliminado correctamente.');
     }
-
-    // Si el usuario es cliente, actualizar o crear el cliente asociado
-    if ($request->role === 'cliente') {
-        Cliente::updateOrCreate(
-            ['user_id' => $usuario->id],
-            [
-                'nombre' => $validatedData['name'],
-                'email' => $validatedData['email'],
-                'telefono' => $validatedData['telefono'],
-                'direccion' => $validatedData['direccion'],
-                'plante_educativo' => $validatedData['plantel_educativo'],
-                'region' => $validatedData['region'],
-            ]
-        );
-    } else {
-        // Si el usuario deja de ser cliente, eliminar sus datos en la tabla clientes
-        Cliente::where('user_id', $usuario->id)->delete();
-    }
-
-    return redirect()->route('usuarios.index')->with('success', 'Usuario actualizado correctamente.');
-}
 }
