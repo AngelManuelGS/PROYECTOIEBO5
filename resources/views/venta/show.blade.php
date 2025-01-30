@@ -94,7 +94,7 @@
                 columns: [
                     { data: 'id' },
                     { data: 'total' },
-                    { data: 'cliente.name', defaultContent: 'Sin cliente' },
+                    { data: 'cliente_nombre', defaultContent: 'Sin cliente' },
                     {
                         data: 'created_at',
                         render: function(data) {

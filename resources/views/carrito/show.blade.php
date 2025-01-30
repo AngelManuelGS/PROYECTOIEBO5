@@ -31,12 +31,13 @@
                                     <td>{{ $item['nombre'] }}</td>
                                     <td>${{ number_format($item['precio'], 2) }}</td>
                                     <td>
-                                        <form action="{{ route('carrito.actualizar', $id) }}" method="POST" class="d-inline">
-                                            @csrf
-                                            <input type="number" name="cantidad" value="{{ $item['cantidad'] }}" min="1" class="form-control form-control-sm d-inline" style="width: 60px;">
-                                            <button type="submit" class="btn btn-info btn-sm">Actualizar</button>
-                                        </form>
-                                    </td>
+    <form action="{{ route('carrito.actualizar', $id) }}" method="POST" class="d-inline">
+        @csrf
+        <input type="number" name="cantidad" value="{{ $item['cantidad'] }}" min="1" class="form-control form-control-sm d-inline" style="width: 60px;">
+        <button type="submit" class="btn btn-info btn-sm">Actualizar</button>
+    </form>
+</td>
+
                                     <td>${{ number_format($item['precio'] * $item['cantidad'], 2) }}</td>
                                     <td>
                                         <form action="{{ route('carrito.remover', $id) }}" method="POST" class="d-inline">

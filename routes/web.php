@@ -36,6 +36,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/clientes', [ClienteController::class, 'index'])->name('clientes.index');
     Route::prefix('carrito')->group(function () {
         Route::get('/', [CarritoController::class, 'mostrarCarrito'])->name('carrito.mostrar');
+        Route::post('/carrito/actualizar/{productoId}', [CarritoController::class, 'actualizar'])->name('carrito.actualizar');
         Route::post('/agregar/{producto}', [CarritoController::class, 'agregar'])->name('carrito.agregar');
         Route::post('/remover/{producto}', [CarritoController::class, 'remover'])->name('carrito.remover');
         Route::post('/comprar', [CarritoController::class, 'finalizarCompra'])->name('carrito.comprar');
@@ -179,9 +180,9 @@ Route::middleware(['cliente'])->group(function () {
 });
 
 // Página de inicio (puede ser la de login o una pantalla de bienvenida)
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+// Route::get('/', function () {
+//     return view('welcome');
+// })->name('home');
 
 
 

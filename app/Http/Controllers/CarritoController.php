@@ -121,4 +121,20 @@ class CarritoController extends Controller
         // Retorna una vista con los pedidos
         return view('pedidos.index', compact('pedidos'));
     }
+    public function actualizar(Request $request, $productoId)
+{
+    $request->validate([
+        'cantidad' => 'required|integer|min:1'
+    ]);
+
+    $carrito = session()->get('carrito', []);
+
+    if (isset($carrito[$productoId])) {
+        $carrito[$productoId]['cantidad'] = $request->cantidad;
+        session()->put('carrito', $carrito);
+    }
+
+    return redirect()->route('carrito.mostrar')->with('success', 'Cantidad actualizada.');
+}
+
 }
