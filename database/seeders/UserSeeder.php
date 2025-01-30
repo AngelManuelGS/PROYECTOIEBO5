@@ -38,6 +38,6 @@ class UserSeeder extends Seeder
         ]);
 
         // Si necesitas generar usuarios adicionales, descomenta la línea de abajo
-        User::factory()->count(10)->create(['role' => 'cliente']);
+        //User::factory()->count(10)->create(['role' => 'cliente']);
     }
 }

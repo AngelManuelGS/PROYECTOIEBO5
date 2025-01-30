@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Contracts\View\View;
+use App\Models\Cliente;
 
 class UsuarioController extends Controller
 {
@@ -28,17 +29,37 @@ class UsuarioController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
+            'role' => 'required|string|in:admin,cliente', // Validamos que sea "admin" o "cliente"
+            'telefono' => 'nullable|string|max:15', // Solo si es cliente
+            'direccion' => 'nullable|string|max:255',
+            'plantel_educativo' => 'nullable|string|max:255',
+            'region' => 'nullable|string|max:255',
         ]);
-
-        User::create([
+    
+        // Crear usuario
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => $request->role,
         ]);
-
+    
+        // Si el usuario es un cliente, crear también un registro en "clientes"
+        if ($request->role === 'cliente') {
+            Cliente::create([
+                'user_id' => $user->id,
+                'nombre' => $request->name,
+                'email' => $request->email,
+                'telefono' => $request->telefono,
+                'direccion' => $request->direccion,
+                'plante_educativo' => $request->plantel_educativo,
+                'region' => $request->region,
+            ]);
+        }
+    
         return redirect()->route('usuarios.index')->with('success', 'Usuario creado correctamente.');
     }
-
+    
     public function show($id): View
     {
         $usuario = User::findOrFail($id);
@@ -52,28 +73,51 @@ class UsuarioController extends Controller
     }
 
     public function update(Request $request, User $usuario): RedirectResponse
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $usuario->id,
-            'password' => 'nullable|string|min:6',
-            'rol' => 'required|string|in:admin,user', // Ahora validamos el rol
-        ]);
-    
-        $data = [
-            'name' => $request->name,
-            'email' => $request->email,
-            'role' => $request->rol, // Se agrega el campo rol
-        ];
-    
-        if ($request->filled('password')) {
-            $data['password'] = Hash::make($request->password);
-        }
-    
-        $usuario->update($data);
-    
-        return redirect()->route('usuarios.index')->with('success', 'Usuario actualizado correctamente.');
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email,' . $usuario->id,
+        'password' => 'nullable|string|min:6',
+        'role' => 'required|string|in:admin,cliente',
+        'telefono' => 'nullable|string|max:15',
+        'direccion' => 'nullable|string|max:255',
+        'plantel_educativo' => 'nullable|string|max:255',
+        'region' => 'nullable|string|max:255',
+    ]);
+
+    $data = [
+        'name' => $request->name,
+        'email' => $request->email,
+        'role' => $request->role,
+    ];
+
+    if ($request->filled('password')) {
+        $data['password'] = Hash::make($request->password);
     }
+
+    $usuario->update($data);
+
+    // Si el usuario es "cliente", actualizar o crear el registro en "clientes"
+    if ($request->role === 'cliente') {
+        Cliente::updateOrCreate(
+            ['user_id' => $usuario->id], // Si existe un cliente con este user_id, actualizarlo
+            [
+                'nombre' => $request->name,
+                'email' => $request->email,
+                'telefono' => $request->telefono,
+                'direccion' => $request->direccion,
+                'plante_educativo' => $request->plantel_educativo,
+                'region' => $request->region,
+            ]
+        );
+    } else {
+        // Si el rol cambia a "admin", eliminarlo de "clientes"
+        Cliente::where('user_id', $usuario->id)->delete();
+    }
+
+    return redirect()->route('usuarios.index')->with('success', 'Usuario actualizado correctamente.');
+}
+
     
 
     public function destroy($id): RedirectResponse
