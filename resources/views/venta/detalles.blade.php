@@ -12,7 +12,7 @@
         <h3>Información General</h3>
     </div>
     <div class="card-body">
-        <p><strong>Cliente:</strong> {{ $venta->cliente->name ?? 'Sin cliente' }}</p>
+        <p><strong>Cliente:</strong> {{ $venta->cliente->nombre ?? 'Sin cliente' }}</p>
         <p><strong>Correo:</strong> {{ $venta->cliente->email ?? 'Sin correo' }}</p>
         <p><strong>Fecha de Registro del Cliente:</strong>
            {{ $venta->cliente?->created_at ? $venta->cliente->created_at->format('d/m/Y H:i:s') : 'N/A' }}</p>
