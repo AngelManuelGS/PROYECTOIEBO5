@@ -51,8 +51,3 @@
         </form>
     </x-modal>
 </section>
-
-<!-- Imagen de advertencia -->
-<div class="flex justify-center mt-6">
-    <img src="{{ asset('img/advertencia.png') }}" alt="Advertencia" class="w-16 h-16">
-</div>
