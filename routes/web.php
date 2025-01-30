@@ -137,9 +137,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::get('/cliente/buscar', [ClienteController::class, 'buscar'])->name('cliente.buscar');
 
-    Route::get('/productosVenta', [ProductoVentaController::class, 'index'])->name('productosVenta');
-    Route::get('/productosVenta', [ProductoController::class, 'index'])->name('productosVenta.index');
-    Route::get('/productosVenta', [ProductoController::class, 'index'])->name('productosVenta');
+    Route::get('/productosVenta', [ProductoVentaController::class, 'index'])->name('productosVenta.index');
+    // Route::get('/productos', [ProductoController::class, 'index'])->name('productos.index');
+    // Route::get('/productossinindex', [ProductoController::class, 'index'])->name('productos');
     Route::get('/listarProductos', [DatatableController::class, 'products'])->name('products.list');
 
 // Grupo de rutas accesibles solo para usuarios autenticados

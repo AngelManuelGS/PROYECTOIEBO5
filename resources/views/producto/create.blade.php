@@ -1,57 +1,106 @@
-@extends('adminlte::page') <!-- Extiende la plantilla de AdminLTE -->
+@extends('adminlte::page')
 
-@section('title', 'Crear Libro') <!-- Define un título descriptivo -->
+@section('title', 'Crear Libro')
 
 @section('content_header')
-    <!-- Encabezado principal con estilos consistentes -->
-    <h1 class="text-center" style="color: var(--color-primary); font-weight: bold;">Crear Nuevo Libro</h1>
+<h1 class="text-center" style="color: var(--color-primary); font-weight: bold;">Crear Nuevo Libro</h1>
 @stop
 
 @section('content')
     <div class="row justify-content-center">
         <div class="col-md-8">
             <!-- Mostrar errores si existen -->
-            @includeif('partials.errors')
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
             <!-- Tarjeta contenedora del formulario -->
-            <div class="card shadow-sm border-2" style="border-color: var(--color-primary); border-radius: 8px;">
-                <div class="card-header bg-primary text-white" style="border-radius: 8px 8px 0 0;">
-                    <h5 class="mb-0" style="font-family: 'Arial', sans-serif;">Formulario de Creación de Libro</h5>
+            <div class="card shadow-sm border-2 border-primary rounded-lg">
+                <div class="card-header bg-primary text-white rounded-top">
+                    <h5 class="mb-0">Formulario de Creación de Libro</h5>
                 </div>
+
                 <div class="card-body">
-                    <!-- Formulario para crear un nuevo libro -->
                     <form method="POST" action="{{ route('productos.store') }}" enctype="multipart/form-data">
                         @csrf
 
-                        <!-- Campos del formulario -->
+                        <!-- Código -->
                         <div class="mb-3">
                             <label for="codigo" class="form-label">Código</label>
-                            <input type="text" name="codigo" id="codigo" class="form-control" placeholder="Ingrese el código del libro" required>
+                            <input type="text" name="codigo" id="codigo" class="form-control @error('codigo') is-invalid @enderror"
+                                   placeholder="Ingrese el código del libro" value="{{ old('codigo') }}" required>
+                            @error('codigo')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
+                        <!-- Nombre del Libro -->
                         <div class="mb-3">
-                            <label for="nombre" class="form-label">Nombre del Libro</label>
-                            <input type="text" name="producto" id="producto" class="form-control" placeholder="Ingrese el nombre del libro" required>
+                            <label for="producto" class="form-label">Nombre del Libro</label>
+                            <input type="text" name="producto" id="producto" class="form-control @error('producto') is-invalid @enderror"
+                                   placeholder="Ingrese el nombre del libro" value="{{ old('producto') }}" required>
+                            @error('producto')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
+                        <!-- Precio de Compra -->
                         <div class="mb-3">
                             <label for="precio_compra" class="form-label">Precio de Compra</label>
-                            <input type="number" step="0.01" name="precio_compra" id="precio_compra" class="form-control" placeholder="Ingrese el precio de compra" required>
+                            <input type="number" step="0.01" name="precio_compra" id="precio_compra" class="form-control @error('precio_compra') is-invalid @enderror"
+                                   placeholder="Ingrese el precio de compra" value="{{ old('precio_compra') }}" required>
+                            @error('precio_compra')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
+                        <!-- Precio de Venta -->
                         <div class="mb-3">
                             <label for="precio_venta" class="form-label">Precio de Venta</label>
-                            <input type="number" step="0.01" name="precio_venta" id="precio_venta" class="form-control" placeholder="Ingrese el precio de venta" required>
+                            <input type="number" step="0.01" name="precio_venta" id="precio_venta" class="form-control @error('precio_venta') is-invalid @enderror"
+                                   placeholder="Ingrese el precio de venta" value="{{ old('precio_venta') }}" required>
+                            @error('precio_venta')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
+                        <!-- Stock -->
                         <div class="mb-3">
                             <label for="stock" class="form-label">Stock</label>
-                            <input type="number" name="stock" id="stock" class="form-control" placeholder="Ingrese el stock disponible" required>
+                            <input type="number" name="stock" id="stock" class="form-control @error('stock') is-invalid @enderror"
+                                   placeholder="Ingrese el stock disponible" value="{{ old('stock') }}" required>
+                            @error('stock')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
+                        <!-- Categoría -->
+                        <div class="mb-3">
+                            <label for="id_categoria" class="form-label">Categoría</label>
+                            <select name="id_categoria" id="id_categoria" class="form-control @error('id_categoria') is-invalid @enderror">
+                                <option value="">Selecciona una categoría</option>
+                                @foreach ($categorias as $id => $nombre)
+                                    <option value="{{ $id }}" {{ old('id_categoria') == $id ? 'selected' : '' }}>{{ $nombre }}</option>
+                                @endforeach
+                            </select>
+                            @error('id_categoria')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <!-- Imagen del Libro -->
                         <div class="mb-3">
                             <label for="foto" class="form-label">Imagen del Libro</label>
-                            <input type="file" name="foto" id="foto" class="form-control">
+                            <input type="file" name="foto" id="foto" class="form-control @error('foto') is-invalid @enderror">
+                            @error('foto')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <!-- Botones de acción -->
@@ -65,6 +114,7 @@
         </div>
     </div>
 @stop
+
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
@@ -94,10 +144,4 @@
             color: var(--color-primary);
         }
     </style>
-@stop
-
-@section('js')
-    <script>
-        console.log('Formulario de creación de libro cargado.');
-    </script>
 @stop
