@@ -93,7 +93,6 @@
             color: var(--color-primary);
         }
     </style>
-@s
 @stop
 
 @section('js')

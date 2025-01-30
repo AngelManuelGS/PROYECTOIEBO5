@@ -57,21 +57,24 @@ class UsuarioController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $usuario->id,
             'password' => 'nullable|string|min:6',
+            'rol' => 'required|string|in:admin,user', // Ahora validamos el rol
         ]);
-
+    
         $data = [
             'name' => $request->name,
             'email' => $request->email,
+            'role' => $request->rol, // Se agrega el campo rol
         ];
-
+    
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
         }
-
+    
         $usuario->update($data);
-
+    
         return redirect()->route('usuarios.index')->with('success', 'Usuario actualizado correctamente.');
     }
+    
 
     public function destroy($id): RedirectResponse
     {
