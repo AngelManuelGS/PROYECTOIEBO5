@@ -14,27 +14,29 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
+
+     public function index()
+    {
+        $user = auth()->user(); // Obtiene el usuario autenticado
+
+        return view('profile.edit', compact('user'));
+    }
     public function edit(Request $request): View
     {
-        return view('profile.edit', [
-            'user' => $request->user(),
-        ]);
+        $user = Auth::user();
+        return view('profile.edit', compact('user'));
+
     }
 
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(Request $request)
     {
-        $request->user()->fill($request->validated());
+        $user = Auth::user();
+        $user->update($request->only('name', 'email'));
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
-
-        $request->user()->save();
-
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return redirect()->route('profile.edit')->with('status', 'Perfil actualizado correctamente.');
     }
 
     /**
@@ -57,4 +59,5 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
+
 }

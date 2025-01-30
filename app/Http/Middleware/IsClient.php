@@ -10,14 +10,19 @@ class IsClient
 {
     /**
      * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->user()->role !== 'cliente') {
-            return redirect('/productosVenta'); // Redirigir a la vista de cliente
+        // Verifica si el usuario está autenticado
+        if (!auth()->check()) {
+            return redirect('/login')->with('error', 'Debes iniciar sesión para acceder.');
         }
+
+        // Verifica si el usuario tiene el rol de cliente
+        if (auth()->user()->role !== 'cliente') {
+            return redirect('/productosVenta')->with('error', 'No tienes permiso para acceder a esta sección.');
+        }
+
         return $next($request);
     }
 }

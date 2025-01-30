@@ -3,7 +3,7 @@
 @section('title', 'Clientes') <!-- Define el título de la página como "Clientes" -->
 
 @section('content_header')
-    <h1>Clientes</h1> <!-- Encabezado principal de la sección de "Clientes" -->
+    <h1 style="color: var(--color-primary); font-weight: bold;">Clientes</h1> <!-- Encabezado principal de la sección de "Clientes" -->
 @stop
 
 @section('content')
@@ -12,7 +12,7 @@
             <div class="card-header" style="background-color: var(--color-primary); color: var(--color-white); border-radius: 8px 8px 0 0;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <!-- Título de la tarjeta -->
-                    <span id="card_title">
+                    <span style="font-family: 'Arial', sans-serif; font-size: 1.2rem; font-weight: bold;" id="card_title">
                         {{ __('Clientes') }}
                     </span>
                     <div class="float-right">

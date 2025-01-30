@@ -17,18 +17,14 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Verifica si el usuario está autenticado
-        if (!auth()->check()) {
-            abort(403, 'Acceso denegado. Usuario no autenticado.');
+        if (auth()->check() && auth()->user()->role == 'admin') {
+            return $next($request);
         }
 
-        // Verifica si el usuario tiene el rol de administrador
-        if (auth()->user()->role !== 'admin') {
-            abort(403, 'Acceso denegado. No tienes permisos de administrador.');
-        }
-
-        return $next($request);
+        // Redirige a la sección principal del cliente si no es administrador
+        return redirect()->route('cliente.home')->with('error', 'Acceso denegado, redirigiendo a tu sección principal.');
     }
+
 }
 
 

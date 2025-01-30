@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container">
-    <h1 class="text-center mb-4">Catálogo de Libros</h1> <!-- Encabezado con espacio ajustado -->
+    <h1 style="color: var(--color-primary); font-weight: bold;">Catálogo de Libros</h1> <!-- Encabezado con espacio ajustado -->
 
     <div class="row">
         @forelse ($productos as $producto)

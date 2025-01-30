@@ -3,7 +3,7 @@
 @section('content')
 
 <div class="container mt-4">
-    <h1 class="text-center mb-4">Catálogo de Libros</h1>
+    <h1 style="color: var(--color-primary); font-weight: bold;">Catálogo de Libros</h1>
     <div class="table-responsive">
         <table class="table table-bordered table-hover">
             <thead class="thead-dark">

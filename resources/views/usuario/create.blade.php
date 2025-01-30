@@ -3,7 +3,7 @@
 @section('title', 'Nuevo Usuario') <!-- Define el título de la página -->
 
 @section('content_header')
-    <h1>Crear Nuevo Usuario</h1> <!-- Encabezado principal -->
+    <h1 style="color: var(--color-primary); font-weight: bold;">Crear Nuevo Usuario</h1> <!-- Encabezado principal -->
 @stop
 
 @section('content')

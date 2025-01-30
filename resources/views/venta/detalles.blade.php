@@ -3,7 +3,7 @@
 @section('title', 'Detalles de Venta')
 
 @section('content_header')
-<h1>Detalles de Venta #{{ $venta->id }}</h1>
+<h1 style="color: var(--color-primary); font-weight: bold;">Detalles de Venta #{{ $venta->id }}</h1>
 @stop
 
 @section('content')

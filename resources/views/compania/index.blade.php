@@ -3,7 +3,7 @@
 @section('title', 'Dashboard')  <!-- Define el título de la página como "Dashboard" -->
 
 @section('content_header')
-    <h1>Plantel</h1>  <!-- Encabezado principal de la sección de "Compania" -->
+    <h1 style="color: var(--color-primary); font-weight: bold;" >Plantel</h1>  <!-- Encabezado principal de la sección de "Compania" -->
 @stop
 
 @section('content')
