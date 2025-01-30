@@ -13,7 +13,7 @@
             <div class="card shadow-sm border-2" style="border-color: var(--color-primary); border-radius: 8px;">
                 <div class="card-header bg-primary text-white" style="border-radius: 8px 8px 0 0;">
                     <div class="d-flex justify-content-between align-items-center">
-                        <span style="font-family: 'Arial', sans-serif;">Libros</span>
+                        <span style="font-family: 'Arial', sans-serif; font-size: 1.2rem; font-weight: bold;">Libros</span>
                         <a href="{{ route('productos.create') }}" class="btn btn-success btn-sm">
                             Crear Nuevo
                         </a>

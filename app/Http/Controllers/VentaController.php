@@ -164,14 +164,13 @@ public function create()
 {
     return view('venta.create'); // Asegúrate de que esta vista exista
 }
-
 public function misPedidos()
 {
-    $usuarioId = auth()->id();
-    $ventas = Venta::where('id_usuario', $usuarioId)->with('detalleventa.producto')->get();
+    $usuarioId = auth()->id(); // Obtener el ID del usuario autenticado
 
-    return view('venta.pedidos', compact('ventas'));
-}
+    $pedidos = Venta::where('id_usuario', $usuarioId)
+                    ->with('detalleventa.producto') // Cargar detalles de venta
+                    ->get();
 
-
-}
+    return view('carrito.pedidos', compact('pedidos'));
+}}

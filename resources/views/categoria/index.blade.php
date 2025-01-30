@@ -3,7 +3,7 @@
 @section('title', 'Dashboard') <!-- Define el título de la página como "Dashboard" -->
 
 @section('content_header')
-    <h1>Categorías</h1> <!-- Encabezado principal de la sección de categorías -->
+    <h1 style="color: var(--color-primary); font-weight: bold;">Categorías</h1> <!-- Encabezado principal de la sección de categorías -->
 @stop
 
 @section('content')
@@ -13,7 +13,7 @@
                 <div class="card-header" style="background-color: var(--color-primary); color: var(--color-white);">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <!-- Título de la tarjeta -->
-                        <span id="card_title">
+                        <span style="font-family: 'Arial', sans-serif; font-size: 1.2rem; font-weight: bold;" id="card_title">
                             {{ __('Categorías') }}
                         </span>
                         <div class="float-right">

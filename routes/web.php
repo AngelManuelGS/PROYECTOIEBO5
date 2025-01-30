@@ -13,6 +13,7 @@ use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\VentaController;
 use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\AdminVentaController;
+use App\Http\Controllers\ProductoVentaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +30,9 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name
 
 // Grupo de rutas protegidas por middleware 'auth' y 'admin'
 Route::middleware(['auth'])->group(function () {
+    Route::get('/pedidos', [CarritoController::class, 'misPedidos'])->name('pedidos.index');
+    Route::get('/pedidos', [VentaController::class, 'misPedidos'])->name('pedidos.index');
+    Route::get('/pedidos', [VentaController::class, 'misPedidos'])->name('pedidos');
     Route::get('/clientes', [ClienteController::class, 'index'])->name('clientes.index');
     Route::prefix('carrito')->group(function () {
         Route::get('/', [CarritoController::class, 'mostrarCarrito'])->name('carrito.mostrar');
@@ -44,12 +48,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/home', [DashboardController::class, 'index'])->name('home');
 
 
-    // Perfil de usuario
-    Route::prefix('profile')->group(function () {
-        Route::get('/', [ProfileController::class, 'edit'])->name('profile.edit');
-        Route::patch('/', [ProfileController::class, 'update'])->name('profile.update');
-        Route::delete('/', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    });
 
     // Recursos principales
     Route::resource('productos', ProductoController::class);
@@ -81,29 +79,23 @@ Route::middleware(['auth', 'admin'])->group(function () {
     });
 });
 
+
+
 // Grupo de rutas protegidas por middleware 'auth' para usuarios autenticados
-Route::middleware(['auth'])->group(function () {
-    // Carrito y ventas
-    Route::prefix('carrito')->group(function () {
-        Route::get('/', [CarritoController::class, 'mostrarCarrito'])->name('carrito.mostrar');
-        Route::post('/agregar/{producto}', [CarritoController::class, 'agregar'])->name('carrito.agregar');
-        Route::post('/remover/{producto}', [CarritoController::class, 'remover'])->name('carrito.remover');
-        Route::post('/comprar', [CarritoController::class, 'finalizarCompra'])->name('carrito.comprar');
-        Route::get('/pedidos', [VentaController::class, 'misPedidos'])->name('pedidos.index');
-
-
-    });
 
     // Ventas
     Route::middleware(['auth'])->group(function () {
+
         Route::get('/venta/show', [VentaController::class, 'show'])->name('venta.show');
         Route::get('/venta', [VentaController::class, 'index'])->name('venta.index');
 
         Route::prefix('ventas')->group(function () {
             // Página principal de ventas
             Route::get('/', [VentaController::class, 'index'])->name('venta.index');
-        Route::post('/venta', [VentaController::class, 'store'])->name('venta.store');
+        Route::post('/venta', action: [VentaController::class, 'store'])->name('venta.store');
+        Route::post('/venta/store', [VentaController::class, 'store'])->name('venta.store');
 
+            // Mostrar lista de ventas
             // Mostrar ticket de venta
             Route::get('/{id}/ticket', [VentaController::class, 'ticket'])->name('ventas.ticket');
 
@@ -128,9 +120,9 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/list', [VentaController::class, 'list'])->name('venta.list');
 
             Route::get('/listarVentas', [DatatableController::class, 'sales'])->name('sales.list');
-Route::get('/ventas/{id}/detalles', [VentaController::class, 'detalles'])->name('ventas.detalles');
-Route::post('/ventas/{id}/estado', [VentaController::class, 'cambiarEstado'])->name('ventas.cambiarEstado');
-Route::get('/listarClientes', [DatatableController::class, 'clients'])->name('clients.list');
+            Route::get('/ventas/{id}/detalles', [VentaController::class, 'detalles'])->name('ventas.detalles');
+            Route::post('/ventas/{id}/estado', [VentaController::class, 'cambiarEstado'])->name('ventas.cambiarEstado');
+            Route::get('/listarClientes', [DatatableController::class, 'clients'])->name('clients.list');
 
 
         });
@@ -141,8 +133,60 @@ Route::get('/listarClientes', [DatatableController::class, 'clients'])->name('cl
 
 
     // Cliente en ventas
+    Route::get('/cliente/home', [ClienteController::class, 'index'])->name('cliente.home');
+
     Route::get('/cliente/buscar', [ClienteController::class, 'buscar'])->name('cliente.buscar');
+
+    Route::get('/productosVenta', [ProductoVentaController::class, 'index'])->name('productosVenta');
+    Route::get('/productosVenta', [ProductoController::class, 'index'])->name('productosVenta.index');
+    Route::get('/productosVenta', [ProductoController::class, 'index'])->name('productosVenta');
+    Route::get('/listarProductos', [DatatableController::class, 'products'])->name('products.list');
+
+// Grupo de rutas accesibles solo para usuarios autenticados
+Route::middleware(['auth'])->group(function () {
+
+    // Ruta para la vista del perfil (disponible para clientes y administradores)
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+
+    // Grupo de rutas solo para clientes
+    Route::middleware(['cliente'])->group(function () {
+        Route::get('/mis-pedidos', [PedidosController::class, 'index'])->name('pedidos');
+    });
+
+    // Grupo de rutas solo para administradores
+    Route::middleware(['admin'])->group(function () {
+        Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    });
+// **Perfil del usuario**
+Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+Route::patch('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+// **Carrito de compras**
+Route::prefix('carrito')->group(function () {
+    Route::get('/', [CarritoController::class, 'mostrarCarrito'])->name('carrito.mostrar');
+    Route::post('/agregar/{producto}', [CarritoController::class, 'agregar'])->name('carrito.agregar');
+    Route::post('/remover/{producto}', [CarritoController::class, 'remover'])->name('carrito.remover');
+    Route::post('/comprar', [CarritoController::class, 'finalizarCompra'])->name('carrito.comprar');
+
+
+
+
 });
+Route::middleware(['cliente'])->group(function () {
+    Route::get('/mis-pedidos', [PedidosController::class, 'index'])->name('pedidos');
+});
+
+// Página de inicio (puede ser la de login o una pantalla de bienvenida)
+Route::get('/', function () {
+    return view('welcome');
+})->name('home');
+
+
+
+});
+
 
 // Autenticación
 require __DIR__ . '/auth.php';

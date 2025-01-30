@@ -5,7 +5,7 @@
 <!-- Define el título de la página como "Usuarios" -->
 
 @section('content_header')
-    <h1>Usuarios</h1>
+    <h1 style="color: var(--color-primary); font-weight: bold;">Usuarios</h1>
     <!-- Encabezado de la página que muestra "Usuarios" -->
 @stop
 
@@ -14,7 +14,7 @@
         <div class="card shadow-sm" style="border: 2px solid var(--color-primary); border-radius: 8px;">
             <div class="card-header" style="background-color: var(--color-primary); color: var(--color-white); border-radius: 8px 8px 0 0;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span id="card_title">
+                    <span style="font-family: 'Arial', sans-serif; font-size: 1.2rem; font-weight: bold;" id="card_title">
                         {{ __('Usuarios') }}
                     </span>
                     <div class="float-right">

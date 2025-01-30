@@ -96,7 +96,7 @@ return [
             'can' => 'is-admin',
             'submenu' => [
                 ['text' => 'Usuarios', 'url' => '/usuarios'],
-                ['text' => 'Plantel', 'url' => '/compania'],
+                //['text' => 'Plantel', 'url' => '/compania'],
             ],
         ],
         ['text' => 'Clientes', 'url' => 'clientes', 'icon' => 'fas fa-fw fa-users', 'can' => 'is-admin'],

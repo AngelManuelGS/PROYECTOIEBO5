@@ -8,7 +8,6 @@
 
 @section('content')
     <div class="row">
-        <!-- Cajas informativas con estadísticas -->
         @php
             $labels = [
                 'clients' => 'Clientes',
@@ -33,10 +32,9 @@
     </div>
 
     <div class="row">
-        <!-- Gráficos de ventas -->
         <div class="col-md-6">
-            <div class="card shadow-sm border-2" style="border-color: var(--color-primary);">
-                <div class="card-header bg-primary text-white" style="border-radius: 8px 8px 0 0;">
+            <div class="card shadow-sm border-2">
+                <div class="card-header bg-primary text-white">
                     <h3 class="card-title">Ventas por Semana</h3>
                 </div>
                 <div class="card-body">
@@ -48,8 +46,8 @@
         </div>
 
         <div class="col-md-6">
-            <div class="card shadow-sm border-2" style="border-color: var(--color-primary);">
-                <div class="card-header bg-primary text-white" style="border-radius: 8px 8px 0 0;">
+            <div class="card shadow-sm border-2">
+                <div class="card-header bg-primary text-white">
                     <h3 class="card-title">Ventas por Mes</h3>
                 </div>
                 <div class="card-body">
@@ -70,11 +68,6 @@
             justify-content: center;
             align-items: center;
         }
-        h1 {
-            font-family: 'Arial', sans-serif;
-            font-weight: bold;
-            color: var(--color-primary);
-        }
     </style>
 @stop
 
@@ -86,12 +79,11 @@
             ventasMes();
         });
 
-        // Ventas por Semana
         function ventasSemana() {
             const ctx = document.getElementById('ventasPorSemana').getContext('2d');
             const data = {!! json_encode($ventasPorSemana) !!};
-            const labels = data.map(item => item.dia);
-            const valores = data.map(item => item.total);
+            const labels = data.length ? data.map(item => item.dia) : ['Sin datos'];
+            const valores = data.length ? data.map(item => item.total) : [0];
 
             new Chart(ctx, {
                 type: 'bar',
@@ -116,7 +108,6 @@
             });
         }
 
-        // Ventas por Mes
         function ventasMes() {
             const ctx = document.getElementById('ventasPorMes').getContext('2d');
             const dataVenta = @json($ventas);
@@ -133,6 +124,28 @@
                             borderColor: 'rgba(75, 192, 192, 1)',
                             borderWidth: 1,
                         })),
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                            },
+                        },
+                    },
+                });
+            } else {
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Sin datos'],
+                        datasets: [{
+                            label: 'Ventas por Mes',
+                            data: [0],
+                            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1,
+                        }],
                     },
                     options: {
                         responsive: true,
