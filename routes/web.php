@@ -121,7 +121,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
             Route::get('/listarVentas', [DatatableController::class, 'sales'])->name('sales.list');
             Route::get('/ventas/{id}/detalles', [VentaController::class, 'detalles'])->name('ventas.detalles');
-            Route::post('/ventas/{id}/estado', [VentaController::class, 'cambiarEstado'])->name('ventas.cambiarEstado');
+            Route::post('/{id}/estado', [VentaController::class, 'cambiarEstado'])->name('ventas.estado');
             Route::get('/listarClientes', [DatatableController::class, 'clients'])->name('clients.list');
 
 
@@ -150,12 +150,12 @@ Route::middleware(['auth'])->group(function () {
 
     // Grupo de rutas solo para clientes
     Route::middleware(['cliente'])->group(function () {
-        Route::get('/mis-pedidos', [PedidosController::class, 'index'])->name('pedidos');
+        // Route::get('/mis-pedidos', [PedidosController::class, 'index'])->name('pedidos');
     });
 
     // Grupo de rutas solo para administradores
     Route::middleware(['admin'])->group(function () {
-        Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+        // Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     });
 // **Perfil del usuario**
 Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
@@ -175,7 +175,7 @@ Route::prefix('carrito')->group(function () {
 
 });
 Route::middleware(['cliente'])->group(function () {
-    Route::get('/mis-pedidos', [PedidosController::class, 'index'])->name('pedidos');
+    // Route::get('/mis-pedidos', [PedidosController::class, 'index'])->name('pedidos');
 });
 
 // Página de inicio (puede ser la de login o una pantalla de bienvenida)

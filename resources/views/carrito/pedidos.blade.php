@@ -30,6 +30,16 @@
                             <td colspan="4" class="text-center">No tienes pedidos realizados.</td>
                         </tr>
                     @endforelse
+                    @foreach ($pedidos as $pedido)
+    <tr>
+        <td>{{ $pedido->id }}</td>
+        <td>{{ $pedido->cliente->nombre ?? 'Sin Cliente' }}</td>
+        <td>{{ $pedido->usuario->name ?? 'Cliente Directo' }}</td> 
+        <td>{{ $pedido->total }}</td>
+        <td>{{ $pedido->estado }}</td>
+    </tr>
+@endforeach
+
                 </tbody>
             </table>
         </div>

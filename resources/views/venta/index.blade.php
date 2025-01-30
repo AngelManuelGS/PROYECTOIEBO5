@@ -149,7 +149,7 @@
                             Swal.fire(data.title, data.message, data.icon);
                             if (data.icon === 'success') {
                                 setTimeout(() => {
-                                    window.open('/venta/' + data.ticket + '/ticket', '_blank');
+                                    window.open('/ventas/' + data.ticket + '/ticket', '_blank');
                                     window.location.reload();
                                 }, 1500);
                             }
