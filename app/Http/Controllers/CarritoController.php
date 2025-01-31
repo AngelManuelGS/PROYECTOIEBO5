@@ -67,39 +67,55 @@ class CarritoController extends Controller
         return view('carrito.show', compact('carrito', 'totalGeneral'));
     }
 
-    public function finalizarCompra()
-    {
-        $carrito = session()->get('carrito', []);
+    public function finalizarCompra(Request $request)
+{
+    $carrito = session()->get('carrito', []);
 
-        if (empty($carrito)) {
-            return redirect()->route('carrito.mostrar')->with('error', 'El carrito está vacío.');
-        }
+    if (empty($carrito)) {
+        return redirect()->route('carrito.mostrar')->with('error', 'El carrito está vacío.');
+    }
 
-        // Crear la venta
-        $venta = Venta::create([
-            'total' => array_sum(array_map(fn($item) => $item['precio'] * $item['cantidad'], $carrito)),
-            'id_cliente' => auth()->id(), // ID del cliente autenticado
-            'id_usuario' => auth()->id(), // O el usuario que registra la venta
+    // Si el usuario es un administrador, toma el id_cliente del formulario, si es cliente, busca su ID en la tabla clientes
+    if (auth()->user()->isAdmin()) {
+        $id_cliente = $request->input('id_cliente'); // Admin selecciona un cliente
+        $id_usuario = auth()->id(); // Guardar ID del admin
+    } else {
+        // Buscar el ID del cliente asociado al usuario autenticado
+        $id_cliente = \App\Models\Cliente::where('user_id', auth()->id())->value('id');
+        $id_usuario = null; // No se guarda id_usuario porque el cliente hizo la compra
+    }
+
+    // Verificar que el cliente exista
+    if (!$id_cliente) {
+        return redirect()->route('carrito.mostrar')->with('error', 'No se encontró un cliente asociado a tu cuenta.');
+    }
+
+    // Crear la venta con los datos corregidos
+    $venta = Venta::create([
+        'total' => array_sum(array_map(fn($item) => $item['precio'] * $item['cantidad'], $carrito)),
+        'id_cliente' => $id_cliente,  // Cliente real
+        'id_usuario' => $id_usuario,  // Admin si aplica, NULL si es un cliente
+    ]);
+
+    foreach ($carrito as $productoId => $detalle) {
+        Detalleventa::create([
+            'id_venta' => $venta->id,
+            'id_producto' => $productoId,
+            'cantidad' => $detalle['cantidad'],
+            'precio' => $detalle['precio'],
         ]);
 
-        foreach ($carrito as $productoId => $detalle) {
-            Detalleventa::create([
-                'id_venta' => $venta->id, // ID de la venta
-                'id_producto' => $productoId, // ID del producto
-                'cantidad' => $detalle['cantidad'], // Cantidad comprada
-                'precio' => $detalle['precio'], // Precio unitario
-            ]);
-
-            // Actualizar stock del producto
-            $producto = Producto::find($productoId);
-            $producto->decrement('stock', $detalle['cantidad']);
-        }
-
-        // Vaciar el carrito
-        session()->forget('carrito');
-
-        return redirect()->route('productosVenta.index')->with('success', 'Compra realizada con éxito.');
+        // Actualizar stock del producto
+        $producto = Producto::find($productoId);
+        $producto->decrement('stock', $detalle['cantidad']);
     }
+
+    // Vaciar el carrito
+    session()->forget('carrito');
+
+    return redirect()->route('productosVenta.index')->with('success', 'Compra realizada con éxito.');
+}
+
 
     public function remover($productoId)
     {
