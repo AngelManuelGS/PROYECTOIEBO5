@@ -26,17 +26,17 @@ class VentaController extends Controller
     public function store(Request $request)
 {
     $request->validate([
-        'id_cliente' => 'nullable|exists:clientes,id', 
+        'id_cliente' => 'nullable|exists:clientes,id',
     ]);
 
-    $id_cliente = (int) $request->id_cliente; 
+    $id_cliente = (int) $request->id_cliente;
     $total = (float) Cart::subtotal();
     $id_usuario = Auth::check() ? Auth::id() : null; // Si hay usuario autenticado, se guarda su ID
 
     if ($total > 0) {
         $sale = Venta::create([
             'total' => $total,
-            'id_cliente' => $id_cliente, 
+            'id_cliente' => $id_cliente,
             'id_usuario' => $id_usuario, // Se almacena el usuario si existe
             'estado' => 'pendiente',
         ]);
@@ -137,13 +137,12 @@ class VentaController extends Controller
 
     public function destroy($id)
     {
-        $venta = Venta::findOrFail($id);
-
-        // Elimina los detalles de la venta y la venta misma
-        $venta->detalleventa()->delete();
-        $venta->delete();
-
-        return redirect()->route('venta.index')->with('success', 'Venta eliminada correctamente.');
+        $venta = Venta::find($id);
+        if ($venta) {
+            $venta->delete();
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false]);
     }
 
 
@@ -164,7 +163,7 @@ public function create()
 }
 public function misPedidos()
 {
-    $usuarioId = auth()->id(); 
+    $usuarioId = auth()->id();
 
     $pedidos = Venta::where('id_usuario', $usuarioId)
                     ->with(['detalleventa.producto', 'usuario']) // Incluir usuario
