@@ -32,7 +32,7 @@ class DatatableController extends Controller
 
     public function users()
     {
-        $users = User::select('id', 'nombre', 'email')
+        $users = User::select('id', 'name', 'email')
             ->orderBy('id', 'desc')->get();
         return DataTables::of($users)->toJson();
     }
