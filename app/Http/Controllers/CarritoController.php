@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use App\Models\Producto;
 use App\Models\Venta;
 use App\Models\Detalleventa;
+use Illuminate\Support\Facades\Log;
 
 class HomeController extends Controller
 {
@@ -129,15 +130,7 @@ class CarritoController extends Controller
         return redirect()->route('carrito.mostrar')->with('success', 'Producto eliminado del carrito.');
     }
 
-    public function mostrarPedidos()
-    {
-        // Obtén todos los pedidos realizados por el usuario autenticado
-        $pedidos = Venta::with('detalles.producto')->where('id_cliente', auth()->id())->get();
-
-        // Retorna una vista con los pedidos
-        return view('pedidos.index', compact('pedidos'));
-    }
-    public function actualizar(Request $request, $productoId)
+public function actualizar(Request $request, $productoId)
 {
     $request->validate([
         'cantidad' => 'required|integer|min:1'
@@ -152,5 +145,41 @@ class CarritoController extends Controller
 
     return redirect()->route('carrito.mostrar')->with('success', 'Cantidad actualizada.');
 }
+
+public function mostrarPedidos()
+{
+    // Obtener el ID del usuario autenticado (Para pruebas, puedes forzar un ID)
+    $usuarioId = auth()->id();
+    Log::info('Usuario ID: ' . $usuarioId); 
+
+    // Buscar el cliente correcto que coincida con el user_id en la tabla clientes
+    $cliente = \App\Models\Cliente::where('user_id', $usuarioId)->first();
+    Log::info('Cliente ID: ' . $cliente->id);
+    // Si no se encuentra el cliente, redirigir con mensaje de error
+    if (!$cliente) {
+        return redirect()->route('home')->with('error', 'No tienes un cliente asociado a tu cuenta.');
+    }
+
+    // Obtener todas las ventas donde id_cliente de la tabla ventas coincide con el id del cliente encontrado
+    $ventasCliente = \App\Models\Venta::where('id_cliente', $cliente->id)
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    // Obtener todas las ventas realizadas por un administrador (id_usuario no es null)
+    $ventasAdmin = \App\Models\Venta::where('id_cliente', $cliente->id)
+        ->whereNotNull('id_usuario')
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    // Retornar la vista con los datos
+    return view('carrito.pedidos', compact('ventasCliente', 'ventasAdmin'));
+}
+
+
+
+
+
+
+
 
 }

@@ -22,7 +22,7 @@ class AdminMiddleware
         }
 
         // Redirige a la sección principal del cliente si no es administrador
-        return redirect()->route('pedidos')->with('error', 'Acceso denegado, redirigiendo a tu sección principal.');
+        return redirect()->route('/pedido')->with('error', 'Acceso denegado, redirigiendo a tu sección principal.');
     }
 
 }

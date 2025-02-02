@@ -32,7 +32,7 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name
 Route::middleware(['auth'])->group(function () {
     Route::get('/pedidos', [CarritoController::class, 'misPedidos'])->name('pedidos.index');
     Route::get('/pedidos', [VentaController::class, 'misPedidos'])->name('pedidos.index');
-    Route::get('/pedidos', [VentaController::class, 'misPedidos'])->name('pedidos');
+    Route::get('/pedido', [CarritoController::class, 'mostrarPedidos'])->name('mis.pedidos');
     Route::get('/clientes', [ClienteController::class, 'index'])->name('clientes.index');
     Route::prefix('carrito')->group(function () {
         Route::get('/', [CarritoController::class, 'mostrarCarrito'])->name('carrito.mostrar');
@@ -87,7 +87,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // Ventas
     Route::middleware(['auth'])->group(function () {
         Route::get('/mis-pedidos/{id}/detalles', [VentaController::class, 'detallesCliente'])->name('pedidos.cliente.detalles');
-        Route::get('/mis-pedidos', [VentaController::class, 'misPedidos'])->name('mis.pedidos');
+        // Route::get('/mis-pedidos', [VentaController::class, 'misPedidos'])->name('mis.pedidos');
+        
 
         Route::get('/venta/show', [VentaController::class, 'show'])->name('venta.show');
         Route::get('/venta', [VentaController::class, 'index'])->name('venta.index');
@@ -179,6 +180,7 @@ Route::prefix('carrito')->group(function () {
 });
 Route::middleware(['cliente'])->group(function () {
     // Route::get('/mis-pedidos', [PedidosController::class, 'index'])->name('pedidos');
+    Route::get('/pedidos', [CarritoController::class, 'mostrarPedidos'])->name('mis.pedidos');
 });
 
 // Página de inicio (puede ser la de login o una pantalla de bienvenida)
