@@ -115,6 +115,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
             // Detalles de venta
             Route::get('/{id}/detalles', [VentaController::class, 'detalles'])->name('venta.detalles');
             Route::get('/nueva', [VentaController::class, 'create'])->name('venta.nueva');
+            Route::get('/ventas/{id}/detalles', [VentaController::class, 'detalles'])->name('ventas.detalles');
+Route::get('/ventas/{id}/ticket', [VentaController::class, 'ticket'])->name('ventas.ticket');
+Route::delete('/ventas/{id}/eliminar', [VentaController::class, 'eliminar'])->name('ventas.eliminar');
+Route::delete('/ventas/{id}', [VentaController::class, 'destroy'])->name('ventas.eliminar');
 
             // Listar ventas
             Route::get('/listar', [VentaController::class, 'show'])->name('venta.listar');

@@ -24,48 +24,48 @@ class VentaController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'id_cliente' => 'nullable|exists:clientes,id', 
+{
+    $request->validate([
+        'id_cliente' => 'nullable|exists:clientes,id', 
+    ]);
+
+    $id_cliente = (int) $request->id_cliente; 
+    $total = (float) Cart::subtotal();
+    $id_usuario = Auth::check() ? Auth::id() : null; // Si hay usuario autenticado, se guarda su ID
+
+    if ($total > 0) {
+        $sale = Venta::create([
+            'total' => $total,
+            'id_cliente' => $id_cliente, 
+            'id_usuario' => $id_usuario, // Se almacena el usuario si existe
+            'estado' => 'pendiente',
         ]);
-    
-        $id_cliente = $request->id_cliente ? (int) $request->id_cliente : null; // ID del cliente desde el formulario
-        $total = (float) Cart::subtotal();
-        $id_usuario = Auth::id(); // ID del usuario autenticado
-    
-        if ($total > 0) {
-            $sale = Venta::create([
-                'total' => $total,
-                'id_cliente' => $id_cliente, // ID del cliente
-                'id_usuario' => $id_usuario, // ID del usuario autenticado
-                'estado' => 'pendiente',
-            ]);
-    
-            foreach (Cart::content() as $item) {
-                Detalleventa::create([
-                    'precio' => $item->price,
-                    'cantidad' => $item->qty,
-                    'id_producto' => $item->id,
-                    'id_venta' => $sale->id,
-                ]);
-            }
-    
-            Cart::destroy();
-    
-            return response()->json([
-                'title' => 'VENTA GENERADA',
-                'message' => 'La venta ha sido registrada exitosamente.',
-                'icon' => 'success',
-                'ticket' => $sale->id,
+
+        foreach (Cart::content() as $item) {
+            Detalleventa::create([
+                'precio' => $item->price,
+                'cantidad' => $item->qty,
+                'id_producto' => $item->id,
+                'id_venta' => $sale->id,
             ]);
         }
-    
+
+        Cart::destroy();
+
         return response()->json([
-            'title' => 'CARRITO VACÍO',
-            'message' => 'No hay productos en el carrito.',
-            'icon' => 'warning',
+            'title' => 'VENTA GENERADA',
+            'message' => 'La venta ha sido registrada exitosamente.',
+            'icon' => 'success',
+            'ticket' => $sale->id,
         ]);
     }
+
+    return response()->json([
+        'title' => 'CARRITO VACÍO',
+        'message' => 'No hay productos en el carrito.',
+        'icon' => 'warning',
+    ]);
+}
 
 
     public function ticket($id)
@@ -137,13 +137,12 @@ class VentaController extends Controller
 
     public function destroy($id)
     {
-        $venta = Venta::findOrFail($id);
-
-        // Elimina los detalles de la venta y la venta misma
-        $venta->detalleventa()->delete();
-        $venta->delete();
-
-        return redirect()->route('venta.index')->with('success', 'Venta eliminada correctamente.');
+        $venta = Venta::find($id);
+        if ($venta) {
+            $venta->delete();
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false]);
     }
 
 
@@ -164,7 +163,7 @@ public function create()
 }
 public function misPedidos()
 {
-    $usuarioId = auth()->id(); 
+    $usuarioId = auth()->id();
 
     // 📌 Ventas realizadas directamente por el CLIENTE (id_usuario = id_cliente)
     $ventasCliente = Venta::where('id_cliente', $usuarioId)
