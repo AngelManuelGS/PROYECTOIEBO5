@@ -74,5 +74,9 @@ class User extends Authenticatable
     {
         return $this->role === config('roles.cliente');
     }
+    public function cliente()
+{
+    return $this->hasOne(Cliente::class, 'user_id');
+}
 
 }
