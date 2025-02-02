@@ -32,6 +32,7 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name
 Route::middleware(['auth'])->group(function () {
     Route::get('/pedidos', [CarritoController::class, 'misPedidos'])->name('pedidos.index');
     Route::get('/pedidos', [VentaController::class, 'misPedidos'])->name('pedidos.index');
+    
     Route::get('/pedido', [CarritoController::class, 'mostrarPedidos'])->name('mis.pedidos');
     Route::get('/clientes', [ClienteController::class, 'index'])->name('clientes.index');
     Route::prefix('carrito')->group(function () {

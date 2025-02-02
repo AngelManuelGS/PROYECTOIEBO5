@@ -16,14 +16,19 @@ class AdminMiddleware
      * @return mixed
      */
     public function handle(Request $request, Closure $next): Response
-    {
-        if (auth()->check() && auth()->user()->role == 'admin') {
-            return $next($request);
-        }
-
-        // Redirige a la sección principal del cliente si no es administrador
-        return redirect()->route('/pedido')->with('error', 'Acceso denegado, redirigiendo a tu sección principal.');
+{
+    if (auth()->check() && auth()->user()->role == 'admin') {
+        return $next($request);
     }
+
+    // Evita el bucle infinito asegurando que no se bloquee la ruta de redirección
+    if ($request->route()->getName() !== 'mis.pedidos') {
+        return redirect()->route('mis.pedidos')->with('error', 'Acceso denegado, redirigiendo a tu sección principal.');
+    }
+
+    return redirect()->route('home')->with('error', 'Acceso denegado.');
+}
+
 
 }
 
