@@ -58,17 +58,29 @@ class CarritoController extends Controller
     }
 
     public function mostrarCarrito()
-    {
-        $carrito = session()->get('carrito', []);
+{
+    $carrito = session()->get('carrito', []);
 
-        // Calcular el total general
-        $totalGeneral = array_sum(array_map(fn($item) => $item['precio'] * $item['cantidad'], $carrito));
-
-        // Retornar la vista con los datos del carrito y el total general
-        return view('carrito.show', compact('carrito', 'totalGeneral'));
+    // Actualizar la información del carrito con los datos actuales del producto
+    foreach ($carrito as $productoId => &$item) {
+        $producto = Producto::find($productoId);
+        if ($producto) {
+            $item['stock'] = $producto->stock; // Actualiza el stock con el valor más reciente de la BD
+        } else {
+            unset($carrito[$productoId]); // Si el producto ya no existe, lo eliminamos del carrito
+        }
     }
 
-    public function finalizarCompra(Request $request)
+    session()->put('carrito', $carrito); // Guardamos los cambios en la sesión
+
+    // Calcular el total general
+    $totalGeneral = array_sum(array_map(fn($item) => $item['precio'] * $item['cantidad'], $carrito));
+
+    return view('carrito.show', compact('carrito', 'totalGeneral'));
+}
+
+
+public function finalizarCompra(Request $request)
 {
     $carrito = session()->get('carrito', []);
 
@@ -84,43 +96,56 @@ class CarritoController extends Controller
         // Buscar el ID del cliente asociado al usuario autenticado
         $id_cliente = \App\Models\Cliente::where('user_id', auth()->id())->value('id');
 
-if (!$id_cliente) {
-    return redirect()->route('carrito.mostrar')->with('error', 'No se encontró un cliente asociado a tu cuenta.');
-}
+        if (!$id_cliente) {
+            return redirect()->route('carrito.mostrar')->with('error', 'No se encontró un cliente asociado a tu cuenta.');
+        }
 
         $id_usuario = null; // No se guarda id_usuario porque el cliente hizo la compra
     }
 
-    // Verificar que el cliente exista
-    if (!$id_cliente) {
-        return redirect()->route('carrito.mostrar')->with('error', 'No se encontró un cliente asociado a tu cuenta.');
+    // Verificar que cada producto tenga suficiente stock antes de realizar la compra
+    foreach ($carrito as $productoId => $detalle) {
+        $producto = Producto::find($productoId);
+
+        if (!$producto) {
+            return redirect()->route('carrito.mostrar')->with('error', "El producto con ID {$productoId} ya no está disponible.");
+        }
+
+        if ($detalle['cantidad'] > $producto->stock) {
+            return redirect()->route('carrito.mostrar')->with('error', "No hay suficiente stock para {$producto->producto}.");
+        }
     }
 
-    // Crear la venta con los datos corregidos
-    $venta = Venta::create([
-        'total' => array_sum(array_map(fn($item) => $item['precio'] * $item['cantidad'], $carrito)),
-        'id_cliente' => $id_cliente,  // Cliente real
-        'id_usuario' => $id_usuario,  // Admin si aplica, NULL si es un cliente
-    ]);
-
-    foreach ($carrito as $productoId => $detalle) {
-        Detalleventa::create([
-            'id_venta' => $venta->id,
-            'id_producto' => $productoId,
-            'cantidad' => $detalle['cantidad'],
-            'precio' => $detalle['precio'],
+    try {
+        // Crear la venta con los datos corregidos
+        $venta = Venta::create([
+            'total' => array_sum(array_map(fn($item) => $item['precio'] * $item['cantidad'], $carrito)),
+            'id_cliente' => $id_cliente,  // Cliente real
+            'id_usuario' => $id_usuario,  // Admin si aplica, NULL si es un cliente
         ]);
 
-        // Actualizar stock del producto
-        $producto = Producto::find($productoId);
-        $producto->decrement('stock', $detalle['cantidad']);
+        foreach ($carrito as $productoId => $detalle) {
+            Detalleventa::create([
+                'id_venta' => $venta->id,
+                'id_producto' => $productoId,
+                'cantidad' => $detalle['cantidad'],
+                'precio' => $detalle['precio'],
+            ]);
+
+            // Reducir el stock del producto
+            $producto = Producto::find($productoId);
+            $producto->decrement('stock', $detalle['cantidad']);
+        }
+
+        // Vaciar el carrito
+        session()->forget('carrito');
+
+        return redirect()->route('pedidos.index')->with('success', 'Compra realizada con éxito.');
+    } catch (\Exception $e) {
+        return redirect()->route('carrito.mostrar')->with('error', 'Hubo un problema al procesar la compra. Inténtalo de nuevo.');
     }
-
-    // Vaciar el carrito
-    session()->forget('carrito');
-
-    return redirect()->route('productosVenta.index')->with('success', 'Compra realizada con éxito.');
 }
+
 
 
     public function remover($productoId)
@@ -135,21 +160,31 @@ if (!$id_cliente) {
         return redirect()->route('carrito.mostrar')->with('success', 'Producto eliminado del carrito.');
     }
 
-public function actualizar(Request $request, $productoId)
+    public function actualizar(Request $request, $productoId)
 {
     $request->validate([
         'cantidad' => 'required|integer|min:1'
     ]);
 
+    $producto = \App\Models\Producto::findOrFail($productoId);
+
+    // 📌 Verificar si la cantidad solicitada supera el stock disponible
+    if ($request->cantidad > $producto->stock) {
+        return redirect()->route('carrito.mostrar')->with('error', 'No hay suficiente stock disponible.');
+    }
+
     $carrito = session()->get('carrito', []);
 
     if (isset($carrito[$productoId])) {
         $carrito[$productoId]['cantidad'] = $request->cantidad;
+        $carrito[$productoId]['stock'] = $producto->stock; // Asegurar que el stock esté en el carrito
         session()->put('carrito', $carrito);
     }
 
-    return redirect()->route('carrito.mostrar')->with('success', 'Cantidad actualizada.');
+    return redirect()->route('carrito.mostrar')->with('success', 'Cantidad actualizada correctamente.');
 }
+
+    
 
 public function mostrarPedidos()
 {

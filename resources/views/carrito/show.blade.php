@@ -30,13 +30,18 @@
                                 <td>{{ $item['nombre'] }}</td>
                                 <td>${{ number_format($item['precio'], 2) }}</td>
                                 <td>
-                                    <form action="{{ route('carrito.actualizar', $id) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        <input type="number" name="cantidad" value="{{ $item['cantidad'] }}" min="1" 
-                                               class="form-control form-control-sm d-inline" style="width: 60px;">
-                                        <button type="submit" class="btn btn-info btn-sm">Actualizar</button>
-                                    </form>
-                                </td>
+                                <td>
+    <form action="{{ route('carrito.actualizar', $id) }}" method="POST" class="d-inline">
+        @csrf
+        <input type="number" name="cantidad" value="{{ $item['cantidad'] }}" 
+       min="1" max="{{ $item['stock'] }}" 
+       class="form-control form-control-sm d-inline" style="width: 60px;">
+
+        <button type="submit" class="btn btn-info btn-sm">Actualizar</button>
+    </form>
+</td>
+
+
                                 <td>${{ number_format($item['precio'] * $item['cantidad'], 2) }}</td>
                                 <td>
                                     <form action="{{ route('carrito.remover', $id) }}" method="POST" class="d-inline">
@@ -64,7 +69,7 @@
 
             @if (!empty($carrito))
                 <div class="d-flex justify-content-between mt-3">
-                    <a href="{{ route('productos.index') }}" class="btn btn-secondary">Seguir Comprando</a>
+                    <a href="{{ route('productosVenta.index') }}" class="btn btn-secondary">Seguir Comprando</a>
                     <form action="{{ route('carrito.comprar') }}" method="POST">
                         @csrf
                         <button type="submit" class="btn btn-success">Finalizar Compra</button>
@@ -120,7 +125,19 @@
 
 
 @section('js')
-    <script>
-        console.log('Carrito cargado correctamente.');
-    </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('input[name="cantidad"]').forEach(input => {
+        input.addEventListener('change', function () {
+            let maxStock = parseInt(this.getAttribute('max'));
+            if (parseInt(this.value) > maxStock) {
+                alert('No puedes agregar más de ' + maxStock + ' unidades.');
+                this.value = maxStock; // Ajusta automáticamente al máximo permitido
+            }
+        });
+    });
+});
+</script>
+
 @stop
