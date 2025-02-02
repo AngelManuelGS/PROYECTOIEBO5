@@ -195,9 +195,16 @@ public function cambiarEstado(Request $request, $id)
 }
 public function detallesCliente($id)
 {
-    $pedido = Venta::with(['detalleventa.producto']) // Solo carga productos, no info del admin
-                    ->where('id_cliente', auth()->id()) // Solo mostrar ventas del usuario autenticado
-                    ->findOrFail($id);
+    $idCliente = Cliente::where('user_id', auth()->id())->value('id');
+
+if (!$idCliente) {
+    abort(403, 'No tienes permisos para ver esta venta.');
+}
+
+$pedido = Venta::with(['detalleventa.producto'])
+    ->where('id_cliente', $idCliente)
+    ->findOrFail($id);
+
 
     return view('pedidos.detalles_cliente', compact('pedido'));
 }
