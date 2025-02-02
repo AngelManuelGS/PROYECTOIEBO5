@@ -83,6 +83,11 @@ class CarritoController extends Controller
     } else {
         // Buscar el ID del cliente asociado al usuario autenticado
         $id_cliente = \App\Models\Cliente::where('user_id', auth()->id())->value('id');
+
+if (!$id_cliente) {
+    return redirect()->route('carrito.mostrar')->with('error', 'No se encontró un cliente asociado a tu cuenta.');
+}
+
         $id_usuario = null; // No se guarda id_usuario porque el cliente hizo la compra
     }
 
