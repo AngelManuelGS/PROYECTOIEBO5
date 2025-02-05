@@ -113,7 +113,7 @@
             <tbody>
                 @foreach ($productos as $producto)
                     <tr>
-                        <td>{{ $producto->producto->producto ?? 'Producto eliminado' }}</td>
+                        <td>{{ $producto->producto->producto ?? 'Producto' }}</td>
                         <td>{{ $producto->cantidad }}</td>
                         <td>${{ number_format($producto->precio, 2) }}</td>
                         <td>${{ number_format($producto->cantidad * $producto->precio, 2) }}</td>

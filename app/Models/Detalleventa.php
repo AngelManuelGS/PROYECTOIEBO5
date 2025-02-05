@@ -25,7 +25,8 @@ class Detalleventa extends Model
         abort(404, 'La venta no fue encontrada.');
     }
 
-    return view('venta.detalles', compact('venta'));
+    $venta = Venta::with(['detalleventa.producto', 'cliente'])->findOrFail($id);
+    return view('ventas.detalles', compact('venta'));
 }
 
 }

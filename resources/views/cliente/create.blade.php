@@ -116,29 +116,69 @@
     <!-- Carga los estilos personalizados -->
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
     <style>
-        .bg-primary {
+        :root {
+            --color-primary: #285C4D; /* Verde del catálogo */
+            --color-secondary: #B38E5D;
+            --color-active: #007BFF; /* Azul para elementos activos */
+            --color-white: #ffffff;
+        }
+
+        /* 📌 Personalización del menú lateral */
+        .main-sidebar {
+            background-color: var(--color-primary) !important; /* Color verde del catálogo */
+        }
+
+        .brand-link {
             background-color: var(--color-primary) !important;
+            color: var(--color-white) !important;
+            font-weight: bold;
+            text-align: center;
+            font-size: 1.1rem;
         }
 
-        .btn-success {
-            background-color: var(--color-secondary);
-            color: var(--color-white);
+        /* 📌 Estilo de los enlaces del menú */
+        .nav-sidebar .nav-item > .nav-link {
+            color: var(--color-white) !important;
+            font-weight: bold;
+            font-size: 1rem;
+            padding: 12px 15px;
+            transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
+            display: flex;
+            align-items: center;
+            border-radius: 5px;
         }
 
-        .btn-danger {
-            background-color: #dc3545;
-            color: var(--color-white);
+        /* 📌 Iconos en los enlaces */
+        .nav-sidebar .nav-item > .nav-link i {
+            margin-right: 10px;
         }
 
-        .btn-success:hover,
-        .btn-danger:hover {
-            opacity: 0.8;
+        /* 📌 Hover en los elementos del menú */
+        .nav-sidebar .nav-item > .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.2) !important;
         }
 
-        .is-invalid {
-            border-color: red !important;
+        /* 📌 Estilo para el menú activo */
+        .nav-sidebar .nav-item.menu-open > .nav-link,
+        .nav-sidebar .nav-item > .nav-link.active {
+            background-color: var(--color-active) !important; /* Azul */
+            color: var(--color-white) !important;
+        }
+
+        /* 📌 Ajustar icono y texto */
+        .nav-sidebar .nav-item > .nav-link .nav-icon {
+            color: var(--color-white) !important;
+            margin-right: 10px;
+        }
+
+        /* 📌 Espaciado del contenido */
+        .content-wrapper {
+            background-color: #f8f9fa !important;
         }
     </style>
+
+
+
 @stop
 
 @section('js')
