@@ -94,10 +94,18 @@ class ClienteController extends Controller
             'direccion' => 'required|string|max:255',
             'plante_educativo' => 'nullable|string|max:255',
             'region' => 'nullable|string|max:255',
+            'password' => 'nullable|min:6', // La contraseña es opcional
+
         ]);
 
         // Actualizar el cliente
-        $cliente->update($validatedData);
+        $cliente->update($request->except('password'));
+
+        if ($request->filled('password') && $cliente->user) {
+            $cliente->user->update([
+                'password' => bcrypt($request->password), // Hashea la nueva contraseña
+            ]);
+        }
 
         return redirect()->route('clientes.index')->with('success', 'Cliente actualizado correctamente.');
     }

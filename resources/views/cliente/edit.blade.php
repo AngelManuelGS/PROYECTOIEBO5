@@ -50,6 +50,15 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="password" class="form-label">Contraseña</label>
+                            <input type="password" name="password" id="password" class="form-control @error('password') is-invalid @enderror"
+                                   placeholder="Dejar vacío si no desea cambiarla">
+                            @error('password')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
                             <label for="telefono" class="form-label">Teléfono</label>
                             <input type="text" name="telefono" id="telefono" class="form-control @error('telefono') is-invalid @enderror"
                                 value="{{ old('telefono', $cliente->telefono) }}" required>
