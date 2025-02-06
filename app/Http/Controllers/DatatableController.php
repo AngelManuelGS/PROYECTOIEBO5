@@ -45,12 +45,14 @@ class DatatableController extends Controller
     }
 
     public function sales()
-    {
-        $sales = Venta::join('clientes', 'ventas.id_cliente', '=', 'clientes.id')
-            ->select('ventas.*', 'clientes.nombre')
-            ->orderBy('ventas.id', 'desc')->get();
-        return DataTables::of($sales)->toJson();
-    }
+{
+    $sales = Venta::leftJoin('clientes', 'ventas.id_cliente', '=', 'clientes.id')
+        ->select('ventas.*', 'clientes.nombre as cliente_nombre') // Alias correcto
+        ->orderBy('ventas.id', 'desc')->get();
+
+    return DataTables::of($sales)->toJson();
+}
+
     public function list()
 {
     $clientes = Cliente::with('user')->get(); // Carga la relación `user`

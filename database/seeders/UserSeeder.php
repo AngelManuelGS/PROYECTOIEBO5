@@ -30,14 +30,7 @@ class UserSeeder extends Seeder
             'role' => 'admin'
         ]);
 
-        User::create([
-            'name' => 'CLIENTE',
-            'email' => 'cliente@gmail.com',
-            'password' => bcrypt('cliente123'),
-            'role' => 'cliente'
-        ]);
-
         // Si necesitas generar usuarios adicionales, descomenta la línea de abajo
-        User::factory()->count(10)->create(['role' => 'cliente']);
+        //User::factory()->count(10)->create(['role' => 'cliente']);
     }
 }

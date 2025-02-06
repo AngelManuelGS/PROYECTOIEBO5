@@ -14,10 +14,10 @@ class CompaniaSeeder extends Seeder
     public function run(): void
     {
         Compania::create([
-            'nombre' => 'SISTEMAS FREE',
-            'correo' => 'info@gmail.com',
-            'telefono' => '987896543',
-            'direccion' => 'Perú',
+            'nombre' => 'SISTEMAS',
+            'correo' => 'sistemasfo@gmail.com',
+            'telefono' => '0000000000',
+            'direccion' => 'México',
         ]);
     }
 }

@@ -139,4 +139,20 @@ class ProductoController extends Controller
     return view('productosVenta.index', compact('productos')); // Envía los productos a la vista
 }
 
+public function reducirStock($productoId, $cantidad)
+{
+    $producto = Producto::findOrFail($productoId);
+
+    // Validar que la cantidad no sea mayor al stock disponible
+    if ($producto->stock < $cantidad) {
+        return back()->with('error', 'Stock insuficiente para este producto.');
+    }
+
+    // Restar la cantidad sin permitir valores negativos
+    $producto->stock = max(0, $producto->stock - $cantidad);
+    $producto->save();
+}
+
+
+
 }

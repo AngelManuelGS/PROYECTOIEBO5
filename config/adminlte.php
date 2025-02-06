@@ -87,7 +87,8 @@ return [
         // Opciones para clientes
         ['text' => 'Mis Pedidos', 'url' => '/pedidos', 'icon' => 'fas fa-fw fa-box', 'can' => 'is-client'],
         ['text' => 'Productos Disponibles', 'url' => '/productosVenta', 'icon' => 'fas fa-fw fa-store', 'can' => 'is-client'],
-
+        ['text' => 'Mi Carrito', 'url' => '/carrito', 'icon' => 'fas fa-fw fa-shopping-cart', 'can' => 'is-client'],
+        ['text' => 'Mi Perfil', 'url' => '/profile', 'icon' => 'fas fa-fw fa-user', 'can' => 'is-client'],
         // Opciones para administradores
         ['text' => 'Tablero', 'url' => 'dashboard', 'icon' => 'fas fa-fw fa-chart-pie', 'can' => 'is-admin'],
         [

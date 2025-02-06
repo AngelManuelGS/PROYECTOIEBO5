@@ -94,7 +94,7 @@
                 columns: [
                     { data: 'id' },
                     { data: 'total' },
-                    { data: 'cliente.name', defaultContent: 'Sin cliente' },
+                    { data: 'cliente_nombre', defaultContent: 'Sin cliente' },
                     {
                         data: 'created_at',
                         render: function(data) {
@@ -136,13 +136,14 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     fetch(`/ventas/${id}/estado`, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ estado: estado })
-                    })
+    method: 'POST',
+    headers: {
+        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ estado: estado })
+})
+
                     .then(response => {
                         if (!response.ok) {
                             throw new Error(`Error HTTP: ${response.status}`);

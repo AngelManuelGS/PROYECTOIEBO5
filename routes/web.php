@@ -32,10 +32,12 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name
 Route::middleware(['auth'])->group(function () {
     Route::get('/pedidos', [CarritoController::class, 'misPedidos'])->name('pedidos.index');
     Route::get('/pedidos', [VentaController::class, 'misPedidos'])->name('pedidos.index');
-    Route::get('/pedidos', [VentaController::class, 'misPedidos'])->name('pedidos');
+    
+    Route::get('/pedido', [CarritoController::class, 'mostrarPedidos'])->name('mis.pedidos');
     Route::get('/clientes', [ClienteController::class, 'index'])->name('clientes.index');
     Route::prefix('carrito')->group(function () {
         Route::get('/', [CarritoController::class, 'mostrarCarrito'])->name('carrito.mostrar');
+        Route::post('/carrito/actualizar/{productoId}', [CarritoController::class, 'actualizar'])->name('carrito.actualizar');
         Route::post('/agregar/{producto}', [CarritoController::class, 'agregar'])->name('carrito.agregar');
         Route::post('/remover/{producto}', [CarritoController::class, 'remover'])->name('carrito.remover');
         Route::post('/comprar', [CarritoController::class, 'finalizarCompra'])->name('carrito.comprar');
@@ -85,6 +87,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // Ventas
     Route::middleware(['auth'])->group(function () {
+        Route::get('/mis-pedidos/{id}/detalles', [VentaController::class, 'detallesCliente'])->name('pedidos.cliente.detalles');
+        // Route::get('/mis-pedidos', [VentaController::class, 'misPedidos'])->name('mis.pedidos');
+        
 
         Route::get('/venta/show', [VentaController::class, 'show'])->name('venta.show');
         Route::get('/venta', [VentaController::class, 'index'])->name('venta.index');
@@ -111,6 +116,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
             // Detalles de venta
             Route::get('/{id}/detalles', [VentaController::class, 'detalles'])->name('venta.detalles');
             Route::get('/nueva', [VentaController::class, 'create'])->name('venta.nueva');
+            Route::get('/ventas/{id}/detalles', [VentaController::class, 'detalles'])->name('ventas.detalles');
+Route::get('/ventas/{id}/ticket', [VentaController::class, 'ticket'])->name('ventas.ticket');
+Route::delete('/ventas/{id}/eliminar', [VentaController::class, 'eliminar'])->name('ventas.eliminar');
+Route::delete('/ventas/{id}', [VentaController::class, 'destroy'])->name('ventas.eliminar');
 
             // Listar ventas
             Route::get('/listar', [VentaController::class, 'show'])->name('venta.listar');
@@ -121,7 +130,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
             Route::get('/listarVentas', [DatatableController::class, 'sales'])->name('sales.list');
             Route::get('/ventas/{id}/detalles', [VentaController::class, 'detalles'])->name('ventas.detalles');
-            Route::post('/ventas/{id}/estado', [VentaController::class, 'cambiarEstado'])->name('ventas.cambiarEstado');
+            Route::post('/{id}/estado', [VentaController::class, 'cambiarEstado'])->name('ventas.estado');
             Route::get('/listarClientes', [DatatableController::class, 'clients'])->name('clients.list');
 
 
@@ -137,9 +146,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::get('/cliente/buscar', [ClienteController::class, 'buscar'])->name('cliente.buscar');
 
-    Route::get('/productosVenta', [ProductoVentaController::class, 'index'])->name('productosVenta');
-    Route::get('/productosVenta', [ProductoController::class, 'index'])->name('productosVenta.index');
-    Route::get('/productosVenta', [ProductoController::class, 'index'])->name('productosVenta');
+    Route::get('/productosVenta', [ProductoVentaController::class, 'index'])->name('productosVenta.index');
+    // Route::get('/productos', [ProductoController::class, 'index'])->name('productos.index');
+    // Route::get('/productossinindex', [ProductoController::class, 'index'])->name('productos');
     Route::get('/listarProductos', [DatatableController::class, 'products'])->name('products.list');
 
 // Grupo de rutas accesibles solo para usuarios autenticados
@@ -150,12 +159,12 @@ Route::middleware(['auth'])->group(function () {
 
     // Grupo de rutas solo para clientes
     Route::middleware(['cliente'])->group(function () {
-        Route::get('/mis-pedidos', [PedidosController::class, 'index'])->name('pedidos');
+        // Route::get('/mis-pedidos', [PedidosController::class, 'index'])->name('pedidos');
     });
 
     // Grupo de rutas solo para administradores
     Route::middleware(['admin'])->group(function () {
-        Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+        // Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     });
 // **Perfil del usuario**
 Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
@@ -175,13 +184,14 @@ Route::prefix('carrito')->group(function () {
 
 });
 Route::middleware(['cliente'])->group(function () {
-    Route::get('/mis-pedidos', [PedidosController::class, 'index'])->name('pedidos');
+    // Route::get('/mis-pedidos', [PedidosController::class, 'index'])->name('pedidos');
+    Route::get('/pedidos', [CarritoController::class, 'mostrarPedidos'])->name('mis.pedidos');
 });
 
 // Página de inicio (puede ser la de login o una pantalla de bienvenida)
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+// Route::get('/', function () {
+//     return view('welcome');
+// })->name('home');
 
 
 

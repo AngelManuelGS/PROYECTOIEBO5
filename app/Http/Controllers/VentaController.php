@@ -26,20 +26,18 @@ class VentaController extends Controller
     public function store(Request $request)
 {
     $request->validate([
-        'id_cliente' => 'nullable|exists:clientes,id', // Permite NULL pero valida si está presente
+        'id_cliente' => 'nullable|exists:clientes,id', 
     ]);
 
-
-
-    $id_cliente = (int) $request->id_cliente; // Convertir a entero
+    $id_cliente = (int) $request->id_cliente; 
     $total = (float) Cart::subtotal();
+    $id_usuario = Auth::check() ? Auth::id() : null; // Si hay usuario autenticado, se guarda su ID
 
     if ($total > 0) {
-        $userId = Auth::id();
         $sale = Venta::create([
             'total' => $total,
-            'id_cliente' => $id_cliente, // Ahora es un entero
-            'id_usuario' => $userId,
+            'id_cliente' => $id_cliente, 
+            'id_usuario' => $id_usuario, // Se almacena el usuario si existe
             'estado' => 'pendiente',
         ]);
 
@@ -139,13 +137,12 @@ class VentaController extends Controller
 
     public function destroy($id)
     {
-        $venta = Venta::findOrFail($id);
-
-        // Elimina los detalles de la venta y la venta misma
-        $venta->detalleventa()->delete();
-        $venta->delete();
-
-        return redirect()->route('venta.index')->with('success', 'Venta eliminada correctamente.');
+        $venta = Venta::find($id);
+        if ($venta) {
+            $venta->delete();
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false]);
     }
 
 
@@ -166,11 +163,53 @@ public function create()
 }
 public function misPedidos()
 {
-    $usuarioId = auth()->id(); // Obtener el ID del usuario autenticado
+    $usuarioId = auth()->id();
 
-    $pedidos = Venta::where('id_usuario', $usuarioId)
-                    ->with('detalleventa.producto') // Cargar detalles de venta
-                    ->get();
+    // 📌 Ventas realizadas directamente por el CLIENTE (id_usuario = id_cliente)
+    $ventasCliente = Venta::where('id_cliente', $usuarioId)
+                          ->whereColumn('id_cliente', 'id_usuario') // Asegurar que el cliente hizo la compra
+                          ->with(['detalleventa.producto'])
+                          ->get();
 
-    return view('carrito.pedidos', compact('pedidos'));
-}}
+    // 📌 Ventas realizadas por un ADMINISTRADOR (id_usuario != id_cliente)
+    $ventasAdmin = Venta::where('id_cliente', $usuarioId)
+                        ->whereColumn('id_cliente', '<>', 'id_usuario') // La compra la hizo un admin
+                        ->with(['detalleventa.producto', 'usuario']) // Cargar info del admin
+                        ->get();
+
+    return view('carrito.pedidos', compact('ventasCliente', 'ventasAdmin'));
+}
+
+
+public function cambiarEstado(Request $request, $id)
+{
+    $request->validate([
+        'estado' => 'required|in:pendiente,aprobado,cancelado'
+    ]);
+
+    $venta = Venta::findOrFail($id); // Busca la venta o lanza 404 si no existe
+    $venta->estado = $request->estado;
+    $venta->save();
+
+    return response()->json(['success' => true, 'message' => 'Estado actualizado correctamente.']);
+}
+public function detallesCliente($id)
+{
+    $idCliente = Cliente::where('user_id', auth()->id())->value('id');
+
+if (!$idCliente) {
+    abort(403, 'No tienes permisos para ver esta venta.');
+}
+
+$pedido = Venta::with(['detalleventa.producto'])
+    ->where('id_cliente', $idCliente)
+    ->findOrFail($id);
+
+
+    return view('pedidos.detalles_cliente', compact('pedido'));
+}
+
+
+}
+
+

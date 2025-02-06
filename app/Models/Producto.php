@@ -77,4 +77,11 @@ class Producto extends Model
                 ->withTimestamps();
 }
 
+public function setStockAttribute($value)
+{
+    $this->attributes['stock'] = max(0, (int) $value);
+}
+
+
+
 }

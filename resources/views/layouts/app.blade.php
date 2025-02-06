@@ -27,8 +27,11 @@
         <header class="bg-white dark:bg-gray-800 shadow">
             <div class="max-w-7xl mx-auto flex items-center justify-between py-4 px-6 sm:px-6 lg:px-8">
                 <!-- Logo con enlace -->
-                <a href="{{ route('dashboard') }}" class="flex items-center">
-                    <img src="{{ asset('img/logo-iebo.jpg') }}" alt="IEBO Logo" class="h-12 w-auto">
+                <a href="{{ auth()->check() ? (auth()->user()->role === 'admin' ? route('dashboard') : route('pedidos')) : route('login') }}" class="flex items-center">
+    <!-- Contenido del enlace -->
+</a>
+
+                    <img src="{{ asset('imag/logo-iebo.jpg') }}" alt="IEBO Logo" class="h-12 w-auto">
                     <span class="text-lg font-semibold text-gray-800 dark:text-gray-200 ml-2">IEBO</span>
                 </a>
 
