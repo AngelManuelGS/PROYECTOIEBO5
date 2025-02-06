@@ -10,7 +10,7 @@
         <!-- Define el viewport para hacer que el sitio sea responsive -->
 
         <meta name="csrf-token" content="{{ csrf_token() }}">
-        <!-- Inserta el token CSRF de Laravel para proteger contra ataques de falsificación de solicitudes -->yy</title>
+        <!-- Inserta el token CSRF de Laravel para proteger contra ataques de falsificación de solicitudes --></title>
         <!-- Define el título de la página, usando el nombre de la aplicación o "Laravel" como valor predeterminado -->
 
         <!-- Fonts -->
