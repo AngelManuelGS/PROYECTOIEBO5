@@ -1,48 +1,90 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <!-- Define el idioma de la página basado en la configuración de la aplicación Laravel -->
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <head>
-        <meta charset="utf-8">
-        <!-- Configura la codificación de caracteres como UTF-8 -->
+    <title>{{ config('app.name', 'Laravel') }}</title>
 
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <!-- Define el viewport para hacer que el sitio sea responsive -->
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <link rel="icon" href="{{ asset('favicon.png') }}" type="image/png">
 
-        <meta name="csrf-token" content="{{ csrf_token() }}">
-        <!-- Inserta el token CSRF de Laravel para proteger contra ataques de falsificación de solicitudes --></title>
-        <!-- Define el título de la página, usando el nombre de la aplicación o "Laravel" como valor predeterminado -->
+    <!-- Swiper.js (CSS) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css">
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-        <link rel="icon" href="{{ asset('favicon.png') }}" type="image/png">
+    <!-- Scripts -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-        <!-- Conexión previa y carga de la fuente 'Figtree' desde Bunny Fonts -->
+    <style>
+        /* Establece la imagen de fondo */
+        body {
+            background: url("{{ asset('img/imagegobierno.png') }}") no-repeat center center fixed;
+            background-size: cover;
+        }
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-        <!-- Usa Vite para compilar y enlazar los archivos CSS y JS de la aplicación -->
-    </head>
+        /* Carrusel en la parte superior (40% de la pantalla) */
+        .swiper-container {
+            width: 100%;
+            height: 40vh; /* Ocupa el 40% de la pantalla */
+            overflow: hidden;
+        }
 
-    <body class="font-sans text-gray-900 antialiased bg-white">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-white">
-            <!-- Contenedor principal de la página, centrado vertical y horizontalmente, con fondo adaptable al tema oscuro o claro -->
+        .swiper-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Asegura que la imagen cubra todo el espacio */
+        }
 
-            <div class="flex justify-center items-center">
-                <a href="/">
-                    <img src="{{ asset('img/LOGO-IEBO-23A.png') }}" alt="Logo de la plicación" style="width: 750px; height: auto;">
-                </a>
-            </div>
+        /* Contenedor principal */
+        .content-container {
+            position: relative; /* Permite que el contenido esté sobre la imagen de fondo */
+            z-index: 1; /* Se asegura de que esté por encima del fondo */
+        }
+    </style>
+</head>
+
+<body class="font-sans text-gray-900 antialiased bg-white">
+
+    <!-- Carrusel en la parte superior -->
 
 
+    <!-- Contenido principal debajo del carrusel -->
+    <div class="content-container flex flex-col items-center mt-10">
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
-                <!-- Contenedor para el contenido de la página (por ejemplo, formularios), estilizado con fondo claro/oscuro, sombra y bordes redondeados -->
-
-                {{ $slot }}
-                <!-- Espacio donde se coloca el contenido específico de la página al utilizar esta plantilla -->
-            </div>
+        <!-- Logo -->
+        <div class="flex justify-center items-center">
+            <a href="/">
+                <img src="{{ asset('img/LOGO-IEBO-23A.png') }}" alt="Logo de la aplicación" style="width: 750px; height: auto;">
+            </a>
         </div>
-    </body>
+
+        <!-- Cuadro del contenido (ejemplo: formulario de inicio de sesión) -->
+        <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
+            {{ $slot }}
+        </div>
+
+    </div>
+
+
+    <!-- Swiper.js (JavaScript) -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            new Swiper('.swiper-container', {
+                loop: true,
+                autoplay: {
+                    delay: 4000,
+                    disableOnInteraction: false,
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                }
+            });
+        });
+    </script>
+</body>
 </html>
