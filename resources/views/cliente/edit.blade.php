@@ -95,7 +95,7 @@
                         </div>
 
                         <div class="d-flex justify-content-between mt-3">
-                            <a href="{{ route('clientes.index') }}" class="btn btn-secondary">Cancelar</a>
+                            <a href="{{ route('clientes.index') }}" class="btn btn-danger">Cancelar</a>
                             <button type="submit" class="btn btn-success">Actualizar Cliente</button>
                         </div>
                     </form>
@@ -119,7 +119,6 @@
         }
 
         .btn-success {
-            background-color: var(--color-secondary);
             color: var(--color-white);
             border: none;
         }
