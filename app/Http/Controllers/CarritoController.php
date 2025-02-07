@@ -31,31 +31,39 @@ class CarritoController extends Controller
     }
 
     public function agregar(Request $request, $productoId)
-    {
-        // Buscar el producto en la base de datos
-        $producto = Producto::findOrFail($productoId);
+{
+    // Buscar el producto en la base de datos
+    $producto = Producto::findOrFail($productoId);
 
-        // Obtener el carrito actual desde la sesión o inicializar uno vacío
-        $carrito = session()->get('carrito', []);
+    // Obtener el carrito actual desde la sesión o inicializar uno vacío
+    $carrito = session()->get('carrito', []);
 
-        // Si el producto ya está en el carrito, incrementa la cantidad
-        if (isset($carrito[$productoId])) {
-            $carrito[$productoId]['cantidad'] += $request->input('cantidad', 1);
-        } else {
-            // Si no está en el carrito, agrega sus datos
-            $carrito[$productoId] = [
-                'nombre' => $producto->producto, // Nombre del producto
-                'precio' => $producto->precio_venta, // Precio de venta del producto
-                'cantidad' => $request->input('cantidad', 1), // Cantidad solicitada
-            ];
-        }
-
-        // Guardar el carrito actualizado en la sesión
-        session()->put('carrito', $carrito);
-
-        // Redirigir al carrito con un mensaje de éxito
-        return redirect()->route('carrito.mostrar')->with('success', 'Producto agregado al carrito.');
+    // Si el producto ya está en el carrito, incrementa la cantidad
+    if (isset($carrito[$productoId])) {
+        $carrito[$productoId]['cantidad'] += $request->input('cantidad', 1);
+    } else {
+        // Si no está en el carrito, agrega sus datos
+        $carrito[$productoId] = [
+            'nombre' => $producto->producto, // Nombre del producto
+            'precio' => $producto->precio_venta, // Precio de venta del producto
+            'cantidad' => $request->input('cantidad', 1), // Cantidad solicitada
+        ];
     }
+
+    // Guardar el carrito actualizado en la sesión
+    session()->put('carrito', $carrito);
+
+    // 📌 **Calculamos la cantidad total de productos en el carrito**
+    $cantidadTotalCarrito = array_sum(array_column($carrito, 'cantidad'));
+
+    // Redirigir al carrito con un mensaje de éxito
+    return response()->json([
+        'success' => true,
+        'cantidadTotalCarrito' => $cantidadTotalCarrito, // ✅ Total actualizado
+        'nuevaCantidad' => $carrito[$productoId]['cantidad'] // ✅ Cantidad del producto actualizado
+    ]);
+}
+
 
     public function mostrarCarrito()
 {
@@ -184,13 +192,13 @@ public function finalizarCompra(Request $request)
     return redirect()->route('carrito.mostrar')->with('success', 'Cantidad actualizada correctamente.');
 }
 
-    
+
 
 public function mostrarPedidos()
 {
     // Obtener el ID del usuario autenticado (Para pruebas, puedes forzar un ID)
     $usuarioId = auth()->id();
-    Log::info('Usuario ID: ' . $usuarioId); 
+    Log::info('Usuario ID: ' . $usuarioId);
 
     // Buscar el cliente correcto que coincida con el user_id en la tabla clientes
     $cliente = \App\Models\Cliente::where('user_id', $usuarioId)->first();

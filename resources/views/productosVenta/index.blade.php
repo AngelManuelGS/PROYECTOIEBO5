@@ -23,6 +23,13 @@
         </div>
     </div>
 
+    <!-- 🔵 Contador del Carrito -->
+    <div class="text-end mb-3">
+        <span class="badge bg-success p-2">
+            🛒 Productos en el carrito: <span id="cantidadTotalCarrito">0</span>
+        </span>
+    </div>
+
     @foreach ($productos->groupBy('categoria.nombre') as $categoria => $productosCategoria)
         <div class="mb-4 categoria-container" data-categoria="{{ strtolower($categoria) }}">
             <h2 style="color: var(--color-secondary); font-weight: bold;">{{ $categoria }}</h2>
@@ -35,9 +42,7 @@
                             alt="{{ $producto->producto }}">
 
                         <div class="card-body">
-                            <!-- ✅ Nombre del libro ahora completamente centrado -->
                             <h4 class="card-title nombre-libro">{{ $producto->producto }}</h4>
-
                             <p class="card-text text-center"><strong>Precio:</strong> <span class="precio-destacado">${{ number_format($producto->precio_venta, 2) }}</span></p>
                             <p class="card-text text-center"><strong>Stock:</strong> {{ $producto->stock }}</p>
 
@@ -45,10 +50,11 @@
                                 <strong>Categoría:</strong> {{ $producto->categoria->nombre ?? 'Sin categoría' }}
                             </p>
 
-                            <form action="{{ route('carrito.agregar', $producto->id) }}" method="POST">
+                            <!-- ✅ Formulario con AJAX -->
+                            <form onsubmit="agregarAlCarrito(event, {{ $producto->id }})">
                                 @csrf
                                 <div class="form-group">
-                                    <input type="number" name="cantidad" value="1" min="1" max="{{ $producto->stock }}" class="form-control">
+                                    <input type="number" name="cantidad" value="1" min="1" max="{{ $producto->stock }}" class="form-control cantidad-input">
                                 </div>
                                 <button type="submit" class="btn btn-primary w-100">🛒 Agregar al Carrito</button>
                             </form>
@@ -60,6 +66,71 @@
     @endforeach
 </div>
 @endsection
+
+@section('js')
+<script>
+    // Función para filtrar productos
+    function filterProducts() {
+        let searchInput = document.getElementById('searchInput').value.toLowerCase();
+        let selectedCategory = document.getElementById('categoryFilter').value;
+        let categorias = document.querySelectorAll('.categoria-container');
+
+        categorias.forEach(categoria => {
+            let productos = categoria.querySelectorAll('.producto-card');
+            let matches = 0;
+
+            productos.forEach(producto => {
+                let nombre = producto.getAttribute('data-nombre');
+                let categoriaProducto = producto.getAttribute('data-categoria');
+
+                let matchNombre = nombre.includes(searchInput);
+                let matchCategoria = selectedCategory === "" || categoriaProducto === selectedCategory;
+
+                if (matchNombre && matchCategoria) {
+                    producto.style.display = "block";
+                    matches++;
+                } else {
+                    producto.style.display = "none";
+                }
+            });
+
+            if (matches === 0) {
+                categoria.classList.add('hidden');
+            } else {
+                categoria.classList.remove('hidden');
+            }
+        });
+    }
+
+    // 📌 Función para agregar productos con AJAX
+    function agregarAlCarrito(event, productoId) {
+        event.preventDefault();
+
+        let form = event.target;
+        let cantidad = form.querySelector('.cantidad-input').value;
+
+        fetch(`/carrito/agregar/${productoId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ cantidad: cantidad })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('cantidadTotalCarrito').textContent = data.cantidadTotalCarrito;
+                alert('✅ Producto agregado al carrito.');
+            } else {
+                alert('❌ Error al agregar el producto.');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+</script>
+@endsection
+
 
 @section('css')
 <style>
