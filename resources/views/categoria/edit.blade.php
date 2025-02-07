@@ -4,8 +4,8 @@
 
 @section('content_header')
     <!-- Encabezado principal con estilo consistente -->
-    <h1 style="color: var(--color-primary); font-weight: bold;">Editar Categoría</h1>
-@stop
+    <h1 style="color: var(--color-primary); font-weight: bold; text-align: center;">Editar Categoría</h1>
+    @stop
 
 @section('content')
     <div class="row justify-content-center">
@@ -100,7 +100,6 @@
         }
 
         .btn-success {
-            background-color: var(--color-secondary);
             color: var(--color-white);
         }
 

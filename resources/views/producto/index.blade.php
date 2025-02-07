@@ -78,7 +78,7 @@
         }
 
         .btn-primary {
-            background-color: #007bff;
+            background-color: #285C4D;
             color: var(--color-white);
         }
 

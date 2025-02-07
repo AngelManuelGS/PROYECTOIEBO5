@@ -49,8 +49,11 @@
                                         <td>{{ $categoria->anio }}</td>
                                         <td>{{ $categoria->ciclo }}</td>
                                         <td>
-                                            <a class="btn btn-sm btn-primary"
-                                               href="{{ route('categorias.edit', $categoria->id) }}">Editar</a>
+                                            <a class="btn btn-sm"
+                                            href="{{ route('categorias.edit', $categoria->id) }}"
+                                            style="background-color: #285C4D; color: white; transition: background-color 0.3s;"
+                                            onmouseover="this.style.backgroundColor='#007bff';"
+                                            onmouseout="this.style.backgroundColor='#285C4D';">Editar</a>
                                             <button class="btn btn-sm btn-danger"
                                                     onclick="deleteCategory({{ $categoria->id }})">Eliminar</button>
                                         </td>

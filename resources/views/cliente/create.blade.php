@@ -22,7 +22,7 @@
 
             <!-- Tarjeta contenedora del formulario -->
             <div class="card shadow-sm border-2 border-primary rounded-lg">
-                <div class="card-header bg-primary text-white rounded-top">
+                <div class="card-header text-white rounded-top" style="background-color: var(--color-primary) !important;">
                     <h5 class="mb-0">Formulario de Creación de Cliente</h5>
                 </div>
                 <div class="card-body">
