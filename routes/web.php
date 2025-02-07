@@ -117,7 +117,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
             Route::get('/{id}/detalles', [VentaController::class, 'detalles'])->name('venta.detalles');
             Route::get('/nueva', [VentaController::class, 'create'])->name('venta.nueva');
             Route::get('/ventas/{id}/detalles', [VentaController::class, 'detalles'])->name('ventas.detalles');
-Route::get('/pedidos/{id}/ticket', [VentaController::class, 'ticket'])->name('ventas.ticket');
+Route::get('/pedidoS/{id}/ticket', [VentaController::class, 'ticket'])->name('ventas.ticket');
 Route::delete('/ventas/{id}/eliminar', [VentaController::class, 'eliminar'])->name('ventas.eliminar');
 Route::delete('/ventas/{id}', [VentaController::class, 'destroy'])->name('ventas.eliminar');
 
