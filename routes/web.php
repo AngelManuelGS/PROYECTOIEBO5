@@ -32,7 +32,7 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name
 Route::middleware(['auth'])->group(function () {
     Route::get('/pedidos', [CarritoController::class, 'misPedidos'])->name('pedidos.index');
     Route::get('/pedidos', [VentaController::class, 'misPedidos'])->name('pedidos.index');
-    
+
     Route::get('/pedido', [CarritoController::class, 'mostrarPedidos'])->name('mis.pedidos');
     Route::get('/clientes', [ClienteController::class, 'index'])->name('clientes.index');
     Route::prefix('carrito')->group(function () {
@@ -89,7 +89,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::middleware(['auth'])->group(function () {
         Route::get('/mis-pedidos/{id}/detalles', [VentaController::class, 'detallesCliente'])->name('pedidos.cliente.detalles');
         // Route::get('/mis-pedidos', [VentaController::class, 'misPedidos'])->name('mis.pedidos');
-        
+
 
         Route::get('/venta/show', [VentaController::class, 'show'])->name('venta.show');
         Route::get('/venta', [VentaController::class, 'index'])->name('venta.index');
@@ -153,7 +153,8 @@ Route::delete('/ventas/{id}', [VentaController::class, 'destroy'])->name('ventas
 
 // Grupo de rutas accesibles solo para usuarios autenticados
 Route::middleware(['auth'])->group(function () {
-
+    Route::get('/pedidos/ticket/{pedido}', [VentaController::class, 'ticket'])
+    ->name('ventas.ticket');
     // Ruta para la vista del perfil (disponible para clientes y administradores)
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
 
@@ -186,6 +187,8 @@ Route::prefix('carrito')->group(function () {
 Route::middleware(['cliente'])->group(function () {
     // Route::get('/mis-pedidos', [PedidosController::class, 'index'])->name('pedidos');
     Route::get('/pedidos', [CarritoController::class, 'mostrarPedidos'])->name('mis.pedidos');
+
+
 });
 
 // Página de inicio (puede ser la de login o una pantalla de bienvenida)

@@ -65,9 +65,16 @@
 
         <!-- Botones de Acción -->
         <div class="d-flex justify-content-end mt-3 mb-5">
-            <a href="{{ route('ventas.ticket', $venta->id) }}" target="_blank" class="btn btn-primary me-2">
-                <i class="fas fa-print"></i> Imprimir Recibo
-            </a>
+            <!-- Botón de Imprimir Recibo -->
+            <!-- Botón de Imprimir Recibo -->
+<a href="{{ $venta->estado === 'aprobado' ? route('ventas.ticket', $venta->id) : '#' }}"
+    class="btn {{ $venta->estado === 'aprobado' ? 'btn-primary' : 'btn-secondary' }} me-2
+           {{ $venta->estado !== 'aprobado' ? 'disabled' : '' }}"
+    id="btnImprimirRecibo"
+    {{ $venta->estado !== 'aprobado' ? 'aria-disabled=true' : '' }}>
+     <i class="fas fa-print"></i> Imprimir Recibo
+ </a>
+
             <button type="button" class="btn btn-danger" id="btnEliminarVenta" data-id="{{ $venta->id }}">
                 <i class="fas fa-trash"></i> Eliminar
             </button>
@@ -161,5 +168,20 @@
                 });
             });
         });
-    </script>
+
+        document.addEventListener('DOMContentLoaded', () => {
+            let btn = document.getElementById('btnImprimirRecibo');
+            if (btn.classList.contains('disabled')) {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Venta no aprobada',
+                        text: 'No puedes imprimir el recibo hasta que la venta sea aprobada.',
+                        confirmButtonColor: '#3085d6',
+                    });
+                });
+            }
+        });
+        </script>
 @stop
