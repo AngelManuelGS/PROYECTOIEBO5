@@ -119,6 +119,7 @@ return [
                 ['text' => 'Listar ventas', 'url' => '/venta/show'],
             ],
         ],
+        ['text' => 'Mi Perfil', 'url' => '/profile', 'icon' => 'fas fa-fw fa-user', 'can' => 'is-admin'],
     ],
 
     // Filtros del menú para personalizar su comportamiento
