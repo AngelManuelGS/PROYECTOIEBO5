@@ -123,36 +123,47 @@
 
         // Función para eliminar un usuario
         function deleteUser(userId) {
-            Swal.fire({
-                title: "Eliminar",
-                text: "¿Estás seguro de que quieres eliminar este usuario?",
-                icon: "info",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Sí, eliminar!"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    fetch('/usuarios/' + userId, {
-                            method: 'DELETE',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'Content-Type': 'application/json'
-                            }
-                        })
-                        .then(response => {
-                            return response.text();
-                        })
-                        .then(data => {
-                            // Recarga la tabla para actualizar la lista después de eliminar un usuario
-                            $('#tblUsers').DataTable().ajax.reload();
-                        })
-                        .catch(error => {
-                            // Maneja errores en la eliminación
-                            console.error('Error al eliminar:', error);
-                        });
+    Swal.fire({
+        title: "Eliminar Usuario",
+        text: "¿Estás seguro de que quieres eliminar este usuario?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "¡Sí, eliminar!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/usuarios/${userId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: "Eliminado",
+                        text: data.message,
+                        icon: "success",
+                        timer: 2000, // Mensaje desaparece después de 2 segundos
+                        showConfirmButton: false
+                    });
+
+                    // Recargar DataTable sin perder la paginación
+                    $('#tblUsers').DataTable().ajax.reload(null, false);
+                } else {
+                    Swal.fire("Error", "No se pudo eliminar el usuario.", "error");
                 }
+            })
+            .catch(error => {
+                Swal.fire("Error", "Hubo un problema al eliminar el usuario.", "error");
+                console.error(error);
             });
         }
+    });
+}
+
     </script>
 @stop

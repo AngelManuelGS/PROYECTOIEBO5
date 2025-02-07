@@ -135,11 +135,12 @@ class UsuarioController extends Controller
         return redirect()->route('usuarios.index')->with('success', 'Usuario actualizado correctamente.');
     }
 
-    public function destroy($id): RedirectResponse
-    {
-        $usuario = User::findOrFail($id);
-        $usuario->delete();
+    public function destroy($id)
+{
+    $usuario = User::findOrFail($id);
+    $usuario->delete();
 
-        return redirect()->route('usuarios.index')->with('success', 'Usuario eliminado correctamente.');
-    }
+    return response()->json(['success' => true, 'message' => 'Usuario eliminado correctamente']);
+}
+
 }
