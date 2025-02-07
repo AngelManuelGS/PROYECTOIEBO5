@@ -67,6 +67,8 @@
 </div>
 @endsection
 
+{{-- prueba de commit-- eliminar mas tarde --}}
+
 @section('js')
 <script>
     // Función para filtrar productos
