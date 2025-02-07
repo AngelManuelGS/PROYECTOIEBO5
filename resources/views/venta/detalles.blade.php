@@ -8,6 +8,7 @@
     </h1>
 @stop
 
+<!-- venta  -->
 @section('content')
 <div class="card">
     <div class="card-header">
