@@ -120,19 +120,15 @@ class ProductoController extends Controller
      * Elimina un producto de la base de datos.
      */
     public function destroy($id)
-    {
-        $producto = Producto::findOrFail($id);
+{
+    $producto = Producto::findOrFail($id);
+    $producto->delete();
 
-        // Eliminar la imagen asociada si existe
-        if ($producto->foto && Storage::disk('public')->exists($producto->foto)) {
-            Storage::disk('public')->delete($producto->foto);
-        }
+    return response()->json(['success' => true, 'message' => 'Producto eliminado correctamente']);
+}
 
-        // Eliminar el producto
-        $producto->delete();
 
-        return redirect()->route('productos.index')->with('success', 'Producto eliminado exitosamente.');
-    }
+
     public function productosVenta()
 {
     $productos = Producto::all(); // Obtiene todos los productos desde la base de datos

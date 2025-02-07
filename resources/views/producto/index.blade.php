@@ -143,32 +143,39 @@
 
         // Función para eliminar un libro
         function deleteProduct(productId) {
-            Swal.fire({
-                title: "Eliminar",
-                text: "¿Estás seguro de que quieres eliminar este libro?",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "¡Sí, eliminar!"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    fetch(`/productos/${productId}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json'
-                        },
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        $('#tblProducts').DataTable().ajax.reload(); // Recarga la tabla
-                    })
-                    .catch(error => {
-                        console.error('Error al eliminar el libro:', error);
-                    });
+    Swal.fire({
+        title: "Eliminar",
+        text: "¿Estás seguro de que quieres eliminar este libro?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "¡Sí, eliminar!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/productos/${productId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire("Eliminado", data.message, "success");
+                    $('#tblProducts').DataTable().ajax.reload(null, false); // Recargar la tabla sin reiniciar la paginación
+                } else {
+                    Swal.fire("Error", "No se pudo eliminar el producto.", "error");
                 }
+            })
+            .catch(error => {
+                console.error('Error al eliminar el libro:', error);
+                Swal.fire("Error", "Ocurrió un error al eliminar.", "error");
             });
         }
+    });
+}
+
     </script>
 @stop
