@@ -30,9 +30,25 @@
                         </tr>
                     @endforeach
                 </tbody>
-            </table>
 
-            <a href="{{ route('mis.pedidos') }}" class="btn btn-secondary">Volver a Mis Pedidos</a>
+            </table>
+            <div class="d-flex justify-content-end mt-3 mb-5">
+                <a href="{{ route('mis.pedidos') }}" class="btn btn-secondary">Volver a Mis Pedidos</a>
+
+                {{-- @if ($pedido->estado == 'aprobado')  Verifica si la venta está aprobada --}}
+                <a href="{{ $pedido->estado === 'aprobado' ? route('ventas.ticket', $pedido->id) : '#' }}"
+                    class="btn {{ $pedido->estado === 'aprobado' ? 'btn-primary' : 'btn-secondary' }} me-2
+                           {{ $pedido->estado !== 'aprobado' ? 'disabled' : '' }}"
+                    id="btnImprimirRecibo"
+                    {{ $pedido->estado !== 'aprobado' ? 'aria-disabled=true' : '' }}
+                    target="_blank">
+                     <i class="fas fa-print"></i> Imprimir Recibo
+                 </a>
+                {{-- @else
+                    <p class="text-danger fw-bold">Esta venta aún no ha sido aprobada.</p>
+                @endif --}}
+            </div>
+
         </div>
     </div>
 </div>

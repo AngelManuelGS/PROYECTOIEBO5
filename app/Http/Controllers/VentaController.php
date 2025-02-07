@@ -26,17 +26,17 @@ class VentaController extends Controller
     public function store(Request $request)
 {
     $request->validate([
-        'id_cliente' => 'nullable|exists:clientes,id', 
+        'id_cliente' => 'nullable|exists:clientes,id',
     ]);
 
-    $id_cliente = (int) $request->id_cliente; 
+    $id_cliente = (int) $request->id_cliente;
     $total = (float) Cart::subtotal();
     $id_usuario = Auth::check() ? Auth::id() : null; // Si hay usuario autenticado, se guarda su ID
 
     if ($total > 0) {
         $sale = Venta::create([
             'total' => $total,
-            'id_cliente' => $id_cliente, 
+            'id_cliente' => $id_cliente,
             'id_usuario' => $id_usuario, // Se almacena el usuario si existe
             'estado' => 'pendiente',
         ]);
@@ -68,7 +68,7 @@ class VentaController extends Controller
 }
 
 
-    public function ticket($id)
+public function ticket($id)
 {
     $venta = Venta::with(['cliente', 'detalleventa.producto'])->find($id);
 
@@ -76,13 +76,17 @@ class VentaController extends Controller
         abort(404, 'La venta no fue encontrada.');
     }
 
+    // 🔹 Validar que solo se pueda imprimir si la venta está APROBADA
+    if ($venta->estado !== 'aprobado') {
+        abort(404, 'La venta no fue encontrada.');    }
+
     $company = [
         'nombre' => 'INSTITUTO DE ESTUDIO DE BACHILLERATO DE OAXACA',
         'direccion' => 'Dalias 321, Reforma, 68050 Oaxaca de Juárez, Oax.',
         'telefono' => '951 518 6601',
     ];
 
-    // Generar el PDF
+    // Generar el PDF solo si está aprobado
     $pdf = PDF::loadView('ventas.ticket', [
         'venta' => $venta,
         'productos' => $venta->detalleventa,
@@ -90,8 +94,8 @@ class VentaController extends Controller
         'hora' => now()->format('H:i:s'),
         'company' => $company,
     ]);
-    return $pdf->stream("ticket_venta_{$id}.pdf");
 
+    return $pdf->stream("ticket_venta_{$id}.pdf");
 }
 
 
