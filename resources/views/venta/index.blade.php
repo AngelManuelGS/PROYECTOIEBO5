@@ -13,7 +13,7 @@
                 <div class="card-header bg-primary text-white" style="border-radius: 8px 8px 0 0;">
                     <div class="d-flex justify-content-between align-items-center">
                         <span style="font-family: 'Arial', sans-serif;">Registrar Venta</span>
-                        <a href="{{ route('venta.show') }}" class="btn btn-secondary btn-sm">
+                        <a href="{{ route('venta.show') }}" class="btn btn-blue btn-sm">
                             Listar Ventas
                         </a>
                     </div>
@@ -60,19 +60,22 @@
         }
 
         .btn-success {
-            background-color: var(--color-secondary) !important;
             color: var(--color-white);
             border: none;
         }
 
-        .btn-secondary {
-            background-color: #6c757d;
-            color: var(--color-white);
+        .btn-blue { /* Nueva clase personalizada para el botón azul */
+            background-color: #007bff; /* Azul estándar */
+            color: white;
             border: none;
+            transition: background-color 0.3s ease;
         }
 
-        .btn-success:hover,
-        .btn-secondary:hover {
+        .btn-blue:hover { /* Efecto hover para el botón azul */
+            background-color: #007bff; /* Azul más oscuro al pasar el ratón */
+        }
+
+        .btn-success:hover {
             opacity: 0.8;
         }
 

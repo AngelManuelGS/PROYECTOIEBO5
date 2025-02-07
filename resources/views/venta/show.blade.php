@@ -46,9 +46,10 @@
         }
 
         .btn-success {
-            background-color: var(--color-secondary);
-            color: var(--color-white);
-        }
+    color: white; /* Color blanco para el texto */
+    border: none; /* Sin borde */
+    transition: background-color 0.3s ease; /* Transición suave para el color */
+}
 
         .btn-danger {
             background-color: #dc3545;
@@ -63,7 +64,6 @@
         .btn-success:hover,
         .btn-danger:hover,
         .btn-primary:hover {
-            background-color: var(--color-secondary);
             opacity: 0.8; /* Efecto visual sin cambiar el color */
         }
 
