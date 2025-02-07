@@ -36,8 +36,10 @@
 
             <div class="horizontal-scroll">
                 @foreach ($productosCategoria as $producto)
-                    <div class="card producto-card" data-nombre="{{ strtolower($producto->producto) }}" data-categoria="{{ strtolower($categoria) }}">
-                        <img src="{{ $producto->foto ? asset('storage/' . $producto->foto) : 'https://via.placeholder.com/150' }}"
+                <div class="card producto-card {{ $producto->stock == 0 ? 'stock-agotado' : '' }}"
+                    data-nombre="{{ strtolower($producto->producto) }}"
+                    data-categoria="{{ strtolower($categoria) }}">
+                                        <img src="{{ $producto->foto ? asset('storage/' . $producto->foto) : 'https://via.placeholder.com/150' }}"
                             class="card-img-top"
                             alt="{{ $producto->producto }}">
 
@@ -230,6 +232,11 @@
         font-weight: bold;
         color: #28a745;
     }
+.producto-card.stock-agotado {
+    filter: grayscale(100%);
+    opacity: 0.6;
+    pointer-events: none;
+}
 
 </style>
 @endsection
