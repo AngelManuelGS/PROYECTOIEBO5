@@ -20,7 +20,9 @@
            {{ $venta->cliente?->created_at ? $venta->cliente->created_at->format('d/m/Y H:i:s') : 'N/A' }}</p>
         <p><strong>Fecha de Venta:</strong>
            {{ $venta->created_at ? $venta->created_at->format('d/m/Y H:i:s') : 'N/A' }}</p>
-        <p><strong>Monto Total:</strong> ${{ number_format($venta->total, 2) }}</p>
+           <p><strong>Monto Total:</strong> $
+            {{ number_format($venta->detalleventa->sum(fn($detalle) => $detalle->cantidad * $detalle->precio), 2) }}
+        </p>
         <p><strong>Estado:</strong>
             <span class="badge bg-{{ $venta->estado === 'pendiente' ? 'warning' : ($venta->estado === 'aprobado' ? 'success' : 'danger') }}">
                 {{ ucfirst($venta->estado) }}

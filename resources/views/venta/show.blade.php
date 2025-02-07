@@ -21,7 +21,7 @@
                         <thead class="thead-dark">
                             <tr>
                                 <th>Id</th>
-                                <th>Monto</th>
+                                <th>Monto Total</th>
                                 <th>Cliente</th>
                                 <th>Fecha</th>
                                 <th>Estado</th>
@@ -93,7 +93,10 @@
                 ajax: '{{ route('sales.list') }}',
                 columns: [
                     { data: 'id' },
+
+
                     { data: 'total' },
+
                     { data: 'cliente_nombre', defaultContent: 'Sin cliente' },
                     {
                         data: 'created_at',
