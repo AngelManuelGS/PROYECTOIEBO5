@@ -95,9 +95,14 @@
     <style>
         :root {
             --color-primary: #285C4D;
-            --color-secondary: #B38E5D;
+            --color-secondary: #007bff;
             --color-white: #ffffff;
         }
+        .btn-secondary {
+    background-color: #007bff !important; /* Azul */
+    border-color: #007bff !important; /* Azul */
+}
+
 
         /* 🔹 Estilización del menú lateral */
         .main-sidebar {

@@ -12,7 +12,7 @@
 
             <h4>Productos:</h4>
             <table class="table table-bordered">
-                <thead>
+                <thead class="bg-primary text-white">
                     <tr>
                         <th>Producto</th>
                         <th>Cantidad</th>
@@ -30,12 +30,13 @@
                         </tr>
                     @endforeach
                 </tbody>
-
             </table>
-            <div class="d-flex justify-content-end mt-3 mb-5">
+
+            <div class="d-flex justify-content-between mt-3 mb-5">
+                <!-- Botón Volver a Mis Pedidos, a la izquierda -->
                 <a href="{{ route('mis.pedidos') }}" class="btn btn-secondary">Volver a Mis Pedidos</a>
 
-                {{-- @if ($pedido->estado == 'aprobado')  Verifica si la venta está aprobada --}}
+                <!-- Botón Imprimir Recibo, a la derecha -->
                 <a href="{{ $pedido->estado === 'aprobado' ? route('ventas.ticket', $pedido->id) : '#' }}"
                     class="btn {{ $pedido->estado === 'aprobado' ? 'btn-primary' : 'btn-secondary' }} me-2
                            {{ $pedido->estado !== 'aprobado' ? 'disabled' : '' }}"
@@ -43,13 +44,50 @@
                     {{ $pedido->estado !== 'aprobado' ? 'aria-disabled=true' : '' }}
                     target="_blank">
                      <i class="fas fa-print"></i> Imprimir Recibo
-                 </a>
-                {{-- @else
-                    <p class="text-danger fw-bold">Esta venta aún no ha sido aprobada.</p>
-                @endif --}}
+                </a>
             </div>
 
         </div>
     </div>
 </div>
 @endsection
+
+@section('css')
+    <style>
+        :root {
+            --color-primary: #285C4D; /* Verde */
+            --color-secondary: #007bff; /* Azul */
+            --color-white: #ffffff;
+        }
+
+        .bg-primary {
+            background-color: var(--color-primary) !important;
+        }
+
+        .btn-primary {
+            border-color: var(--color-primary);
+        }
+
+            .btn-secondary {
+                background-color: var(--color-primary);
+                color: var(--color-white);
+            }
+
+            .btn-primary:hover {
+    border-color: var(--color-primary) !important;
+}
+
+            .btn-secondary:hover {
+                background-color: var(--color-primary);
+            }
+
+        .d-flex {
+            display: flex;
+            justify-content: space-between; /* Los botones estarán separados entre izquierda y derecha */
+        }
+        .main-sidebar {
+    background-color: var(--color-primary) !important;
+}
+
+    </style>
+@stop
