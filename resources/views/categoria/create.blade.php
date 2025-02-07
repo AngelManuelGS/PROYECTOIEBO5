@@ -3,7 +3,7 @@
 @section('title', 'Crear Categoría') <!-- Define un título descriptivo -->
 
 @section('content_header')
-<h1 style="color: var(--color-primary); font-weight: bold;">Crear Nueva Categoría</h1>
+<h1 style="color: var(--color-primary); font-weight: bold; text-align: center;">Crear Nueva Categoría</h1>
 @stop
 
 @section('content')
@@ -97,7 +97,6 @@
         }
 
         .btn-success {
-            background-color: var(--color-secondary);
             color: var(--color-white);
         }
 
