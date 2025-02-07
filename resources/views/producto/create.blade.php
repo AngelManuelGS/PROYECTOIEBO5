@@ -105,7 +105,7 @@
 
                         <!-- Botones de acción -->
                         <div class="d-flex justify-content-between mt-3">
-                            <a href="{{ route('productos.index') }}" class="btn btn-secondary">Cancelar</a>
+                            <a href="{{ route('productos.index') }}" class="btn btn-danger  ">Cancelar</a>
                             <button type="submit" class="btn btn-success">Guardar Libro</button>
                         </div>
                     </form>
@@ -124,7 +124,6 @@
         }
 
         .btn-success {
-            background-color: var(--color-secondary);
             color: var(--color-white);
         }
 
