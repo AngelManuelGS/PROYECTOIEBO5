@@ -118,10 +118,6 @@
             background-color: var(--color-primary) !important;
         }
 
-        .btn-success {
-            background-color: var(--color-secondary);
-        }
-
         .btn-danger {
             background-color: #dc3545;
             color: var(--color-white);
