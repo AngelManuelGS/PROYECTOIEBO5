@@ -11,10 +11,10 @@ class ProductList extends Component
 {
     use WithPagination;
 
-	protected $paginationTheme = 'bootstrap';
+    protected $paginationTheme = 'bootstrap';
 
     public $search = '';
-    public $perPage = 12;
+    public $perPage = 8;
     public $quantity = [];
 
     public function render()
@@ -25,7 +25,6 @@ class ProductList extends Component
         $cartItems = Cart::content();
 
         foreach ($cartItems as $item) {
-            // Inicializar la cantidad para cada elemento del carrito
             $this->quantity[$item->rowId] = $item->qty;
         }
 
@@ -36,11 +35,25 @@ class ProductList extends Component
     {
         $product = Producto::find($productId);
 
+        if (!$product) {
+            session()->flash('error_message', 'El producto no existe.');
+            return;
+        }
+
+        $cartItem = Cart::search(fn($cart) => $cart->id == $productId)->first();
+        $currentQty = $cartItem ? $cartItem->qty : 0;
+
+        if ($currentQty + 1 > $product->stock) {
+            session()->flash('error_message', 'No puedes agregar más de la cantidad disponible.');
+            return;
+        }
+
         Cart::add([
             'id' => $product->id,
             'name' => $product->producto,
             'price' => $product->precio_venta,
-            'qty' => 1
+            'qty' => 1,
+            'options' => ['stock' => $product->stock] // Guardar stock en las opciones del carrito
         ]);
 
         session()->flash('success_message', 'Producto agregado al carrito.');
@@ -48,8 +61,20 @@ class ProductList extends Component
 
     public function updateQuantity($rowId)
     {
-        $newCant = $this->quantity[$rowId];
-        Cart::update($rowId, ['qty' => $newCant]);
+        $newQty = $this->quantity[$rowId] ?? 1;
+        $cartItem = Cart::get($rowId);
+
+        if (!$cartItem) {
+            session()->flash('error_message', 'El producto no está en el carrito.');
+            return;
+        }
+
+        if ($newQty > $cartItem->options->stock) {
+            session()->flash('error_message', 'No puedes seleccionar más de la cantidad en stock.');
+            return;
+        }
+
+        Cart::update($rowId, ['qty' => $newQty]);
     }
 
     public function removeFromCart($rowId)
