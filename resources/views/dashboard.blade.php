@@ -118,7 +118,7 @@
                     data: {
                         labels: Object.keys(dataVenta[Object.keys(dataVenta)[0]]),
                         datasets: Object.keys(dataVenta).map(year => ({
-                            label: Año ${year},
+                            label: `Año ${year}`,
                             data: Object.values(dataVenta[year]),
                             backgroundColor: 'rgba(75, 192, 192, 0.5)',
                             borderColor: 'rgba(75, 192, 192, 1)',
